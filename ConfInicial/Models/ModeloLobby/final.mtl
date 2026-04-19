@@ -10,6 +10,8 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Bricks092_2K-JPG_Color.jpg
+map_Ns Bricks092_2K-JPG_Roughness.jpg
+map_Bump -bm 1.000000 Bricks092_2K-JPG_NormalGL.jpg
 
 newmtl Concreto
 Ka 1.000000 1.000000 1.000000
@@ -20,6 +22,8 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Concrete037_2K-JPG_Color.jpg
+map_Ns Concrete037_2K-JPG_Roughness.jpg
+map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
 
 newmtl Concreto.001
 Ka 1.000000 1.000000 1.000000
@@ -29,7 +33,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Concrete037_2K-JPG_Color.jpg
+map_Ns Concrete037_2K-JPG_Roughness.jpg
+map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
 
 newmtl Concreto.002
 Ka 1.000000 1.000000 1.000000
@@ -39,7 +44,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Concrete037_2K-JPG_Color.jpg
+map_Ns Concrete037_2K-JPG_Roughness.jpg
+map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
 
 newmtl ConcretoBancas
 Ka 1.000000 1.000000 1.000000
@@ -49,7 +55,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Concrete037_2K-JPG_Color.jpg
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
 
 newmtl FonodoVentanaMain
 Ns 250.000000
@@ -62,26 +69,6 @@ illum 2
 map_Kd Gemini_Generated_Image_2z8ko42z8ko42z8k.png
 
 newmtl Glass.007
-Ns 60.000008
-Ka 1.000000 1.000000 1.000000
-Kd 0.500000 0.500000 0.500000
-Ks 0.400000 0.400000 0.400000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 0.250000
-illum 9
-
-newmtl Glass.008
-Ns 60.000008
-Ka 1.000000 1.000000 1.000000
-Kd 0.500000 0.500000 0.500000
-Ks 0.400000 0.400000 0.400000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 0.250000
-illum 9
-
-newmtl Glass.009
 Ns 60.000008
 Ka 1.000000 1.000000 1.000000
 Kd 0.500000 0.500000 0.500000
@@ -249,6 +236,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Metal028_2K-JPG_Color.jpg
+map_Ns Metal028_2K-JPG_Roughness.jpg
+map_refl Metal028_2K-JPG_Metalness.jpg
+map_Bump -bm 1.000000 Metal028_2K-JPG_NormalGL.jpg
 
 newmtl PavimentoPAtio
 Ka 1.000000 1.000000 1.000000
@@ -259,6 +249,8 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd PavingStones029_2K-JPG_Color.jpg
+map_Ns PavingStones029_2K-JPG_Roughness.jpg
+map_Bump -bm 1.000000 PavingStones029_2K-JPG_NormalGL.jpg
 
 newmtl PiedraPared
 Ka 1.000000 1.000000 1.000000
@@ -269,6 +261,8 @@ Ni 1.500000
 d 1.000000
 illum 1
 map_Kd stone_tiles_diff_2k.jpg
+map_Ns stone_tiles_rough_2k.exr
+map_Bump -bm 1.000000 stone_tiles_nor_gl_2k.exr
 
 newmtl Poliigon_GrassPatchyGround_4585_2K
 Ka 1.000000 1.000000 1.000000
@@ -279,6 +273,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_GrassPatchyGround_4585_BaseColor.jpg
+map_Ns Poliigon_GrassPatchyGround_4585_Roughness.jpg
+map_refl Poliigon_GrassPatchyGround_4585_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_GrassPatchyGround_4585_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K
 Ka 1.000000 1.000000 1.000000
@@ -289,6 +286,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.001
 Ns 250.000000
@@ -300,6 +300,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.002
 Ka 1.000000 1.000000 1.000000
@@ -310,6 +311,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.003
 Ka 1.000000 1.000000 1.000000
@@ -320,6 +324,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.004
 Ka 1.000000 1.000000 1.000000
@@ -330,6 +337,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.005
 Ka 1.000000 1.000000 1.000000
@@ -340,6 +350,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.006
 Ka 1.000000 1.000000 1.000000
@@ -350,6 +363,9 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
+map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.007
 Ns 250.000000
@@ -361,6 +377,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl Poliigon_SlateFloorTile_7657_2K.008
 Ns 250.000000
@@ -372,6 +389,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
+map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
 
 newmtl RailSides.001
 Ns 36.000000
@@ -411,17 +429,20 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd red_brick_03_diff_2k.jpg
+map_Ns red_brick_03_rough_2k.exr
 
 newmtl TilesTravertine001_2K
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.500000 0.500000 0.500000
+Kd 0.860000 0.840000 0.780000
+Ks 0.300000 0.300000 0.300000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd TilesTravertine001_COL_2K.jpg
+map_Kd TilesTravertine001_Col_2K.jpg
+map_refl TilesTravertine001_REFL_2K.jpg
+map_Bump -bm 1.000000 TilesTravertine001_NRM16_2K.tiff
 
 newmtl UNAM
 Ns 250.000000
@@ -582,6 +603,7 @@ Ni 1.000000
 d 1.000000
 illum 3
 map_Kd TheThinker_Diffuse.jpg
+map_Bump TheThinker_Bump.jpg -bm 0.5
 
 newmtl brick
 Ns 250.000000
@@ -592,7 +614,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Bricks092_2K-JPG_Color.jpg
 
 newmtl bronze_bust
 Ns 100.000015
@@ -1051,7 +1072,7 @@ Kd 0.450000 0.550000 0.600000
 Ks 0.900000 0.900000 0.900000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.90000
+d 0.250000
 illum 9
 
 newmtl grout_beige.001
@@ -1196,12 +1217,17 @@ illum 2
 
 newmtl metalAmarillo
 Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
+Kd 0.920000 0.780000 0.050000
+Ks 0.800000 0.650000 0.100000
+Ns 120.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
 map_Kd Metal034_2K-JPG_Color.jpg
+map_Ns Metal034_2K-JPG_Roughness.jpg
+map_refl Metal034_2K-JPG_Metalness.jpg
+map_Bump -bm 1.000000 Metal034_2K-JPG_NormalGL.jpg
 
 newmtl mural_dark_bg
 Ns 29.999998
@@ -1422,7 +1448,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd pantalla.png
 
 newmtl pantalla.001
 Ns 250.000000
@@ -1433,7 +1458,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd pantalla.png
 
 newmtl piedr
 Ka 1.000000 1.000000 1.000000
@@ -1443,7 +1467,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd stone_tiles_diff_2k.jpg
+map_Ns Bricks059_2K-PNG_Roughness.png
+map_Bump -bm 1.000000 Bricks059_2K-PNG_NormalGL.png
 
 newmtl pipe_steel
 Ns 140.000031
@@ -1514,7 +1539,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd Ventanafonodo.jpg
 
 newmtl rivet_dark
 Ns 29.999998
@@ -1553,7 +1577,7 @@ Kd 0.180000 0.420000 0.150000
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_foliage.001
@@ -1573,7 +1597,7 @@ Kd 0.180000 0.420000 0.150000
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_foliage.003
@@ -1593,7 +1617,7 @@ Kd 0.180000 0.420000 0.150000
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_foliage.005
@@ -1613,7 +1637,7 @@ Kd 0.180000 0.420000 0.150000
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_trunk

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -34,19 +34,25 @@ public:
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;
-    glm::vec3 diffuseColor; // color base Kd cuando no hay textura
-    float alpha;            // opacidad del material
+    glm::vec3 diffuseColor;
+    glm::vec3 specularColor;
+    float shininess;
+    float alpha;
 
     Mesh(vector<Vertex> vertices,
         vector<GLuint> indices,
         vector<Texture> textures,
         glm::vec3 diffuseColor = glm::vec3(0.6f),
+        glm::vec3 specularColor = glm::vec3(0.0f),
+        float shininess = 32.0f,
         float alpha = 1.0f)
     {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
         this->diffuseColor = diffuseColor;
+        this->specularColor = specularColor;  // FIX: faltaba esta asignacion
+        this->shininess = shininess;          // FIX: faltaba esta asignacion
         this->alpha = alpha;
         this->setupMesh();
     }
@@ -55,44 +61,24 @@ public:
     {
         GLuint diffuseNr = 1;
         GLuint specularNr = 1;
-
         bool hasDiffuse = false;
 
         for (GLuint i = 0; i < this->textures.size(); i++)
         {
             glActiveTexture(GL_TEXTURE0 + i);
-
             stringstream ss;
-            string number;
             string name = this->textures[i].type;
-
-            if (name == "texture_diffuse")
-            {
-                ss << diffuseNr++;
-                hasDiffuse = true;
-            }
-            else if (name == "texture_specular")
-            {
-                ss << specularNr++;
-            }
-
-            number = ss.str();
-            glUniform1i(glGetUniformLocation(shader.Program, (name + number).c_str()), i);
+            if (name == "texture_diffuse") { ss << diffuseNr++; hasDiffuse = true; }
+            else if (name == "texture_specular") { ss << specularNr++; }
+            glUniform1i(glGetUniformLocation(shader.Program, (name + ss.str()).c_str()), i);
             glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
         }
 
-        // Pasar al shader si tiene textura difusa
         glUniform1i(glGetUniformLocation(shader.Program, "hasDiffuseTexture"), hasDiffuse ? 1 : 0);
-
-        // Pasar color difuso base
-        glUniform3f(glGetUniformLocation(shader.Program, "material_diffuse"),
-            diffuseColor.r, diffuseColor.g, diffuseColor.b);
-
-        // Pasar alpha del material
+        glUniform3f(glGetUniformLocation(shader.Program, "material_diffuse"), diffuseColor.r, diffuseColor.g, diffuseColor.b);
+        glUniform3f(glGetUniformLocation(shader.Program, "material_specular"), specularColor.r, specularColor.g, specularColor.b);
+        glUniform1f(glGetUniformLocation(shader.Program, "material_shininess"), shininess);
         glUniform1f(glGetUniformLocation(shader.Program, "material_alpha"), alpha);
-
-        // Shininess
-        glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
 
         if (alpha < 1.0f)
         {
@@ -128,24 +114,17 @@ private:
         glGenVertexArrays(1, &this->VAO);
         glGenBuffers(1, &this->VBO);
         glGenBuffers(1, &this->EBO);
-
         glBindVertexArray(this->VAO);
-
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
         glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), &this->indices[0], GL_STATIC_DRAW);
-
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
-
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
-
         glBindVertexArray(0);
     }
 };

@@ -25,10 +25,7 @@ GLint TextureFromFile(const char* path, string directory);
 class Model
 {
 public:
-    Model(GLchar* path)
-    {
-        this->loadModel(path);
-    }
+    Model(GLchar* path) { this->loadModel(path); }
 
     void Draw(Shader shader)
     {
@@ -107,39 +104,51 @@ private:
                 indices.push_back(face.mIndices[j]);
         }
 
-        // Color base Kd del material
+        // Valores por defecto
         glm::vec3 diffuseColor(0.6f, 0.6f, 0.6f);
-        float alpha = 1.0f; // ← aquí
+        glm::vec3 specularColor(0.0f);
+        float shininess = 32.0f;
+        float alpha = 1.0f;
 
         if (mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
             aiString matName;
             material->Get(AI_MATKEY_NAME, matName);
+            cout << "Material: " << matName.C_Str() << " | alpha: " << alpha << endl;
 
-            // Obtener color Kd
             aiColor3D color(0.6f, 0.6f, 0.6f);
             if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color))
                 diffuseColor = glm::vec3(color.r, color.g, color.b);
-            material->Get(AI_MATKEY_OPACITY, alpha);
 
-            cout << "Material: " << matName.C_Str() << " | alpha: " << alpha << endl;
-            string materialName = matName.C_Str();
-            if (materialName == "glass")
+            aiColor3D spec(0.f, 0.f, 0.f);
+            if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, spec))
+                specularColor = glm::vec3(spec.r, spec.g, spec.b);
+
+            material->Get(AI_MATKEY_SHININESS, shininess);
+            material->Get(AI_MATKEY_OPACITY, alpha);
+            // Después de material->Get(AI_MATKEY_OPACITY, alpha);
+            string matName2 = matName.C_Str();
+            if (matName2.find("glass_door") != string::npos ||
+                matName2.find("Glass") != string::npos ||
+                matName2.find("glass") != string::npos ||
+                matName2.find("window_glass") != string::npos)
             {
-                alpha = 0.85f;
+                alpha = 0.9f;
+            }
+            if (matName2.find("tree_foliage") != string::npos)
+            {
+                alpha = 0.35f;
             }
 
-            // Texturas difusas
             vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
             textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-            // Texturas especulares
             vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         }
 
-        return Mesh(vertices, indices, textures, diffuseColor,alpha);
+        return Mesh(vertices, indices, textures, diffuseColor, specularColor, shininess, alpha);
     }
 
     vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
