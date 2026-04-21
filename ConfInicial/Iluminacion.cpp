@@ -98,15 +98,21 @@ int main()
         glUniform3f(glGetUniformLocation(shader.Program, "viewPos"),
             camPos.x, camPos.y, camPos.z);
 
-        // Luz direccional tipo sol (de arriba-diagonal)
+        // Luz principal (sol, diagonal desde arriba)
         glUniform3f(glGetUniformLocation(shader.Program, "lightDir"),
             -0.3f, -1.0f, -0.3f);
         glUniform3f(glGetUniformLocation(shader.Program, "lightAmbient"),
-            0.5f, 0.5f, 0.5f);
+            0.55f, 0.55f, 0.55f);   // subido de 0.5 para iluminar sombras
         glUniform3f(glGetUniformLocation(shader.Program, "lightDiffuse"),
-            0.8f, 0.8f, 0.8f);
+            0.6f, 0.6f, 0.6f);      // bajado de 0.8 para evitar quemado
         glUniform3f(glGetUniformLocation(shader.Program, "lightSpecular"),
-            1.0f, 1.0f, 1.0f);
+            0.2f, 0.2f, 0.2f);      // bajado de 1.0 para evitar blancos saturados
+
+        // Fill light (rebote desde abajo, simula luz ambiental de Blender)
+        glUniform3f(glGetUniformLocation(shader.Program, "fillLightDir"),
+            0.3f, 0.5f, 0.3f);
+        glUniform3f(glGetUniformLocation(shader.Program, "fillLightColor"),
+            0.25f, 0.25f, 0.28f);   // tono ligeramente frio, intensidad suave
         // --------------------------------
 
         glm::mat4 view = camera.GetViewMatrix();

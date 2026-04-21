@@ -18,6 +18,10 @@ uniform vec3 lightAmbient;
 uniform vec3 lightDiffuse;
 uniform vec3 lightSpecular;
 
+// Fill light (rebote ambiental, simula HDRI suave)
+uniform vec3 fillLightDir;
+uniform vec3 fillLightColor;
+
 void main()
 {
     vec4 baseColor;
@@ -33,29 +37,48 @@ void main()
     vec3 lightDirection = normalize(-lightDir);
     vec3 viewDirection = normalize(viewPos - FragPos);
 
+    // --- Luz principal ---
+
     // Ambient
     vec3 ambient = lightAmbient * baseColor.rgb;
 
-    // Diffuse
+    // Diffuse principal
     float diff = max(dot(norm, lightDirection), 0.0);
     vec3 diffuse = lightDiffuse * diff * baseColor.rgb;
 
-    // Specular Phong
+    // Specular limitado (evita quemado blanco)
     vec3 reflectDir = reflect(-lightDirection, norm);
     float shininess = max(material_shininess, 1.0);
     float spec = pow(max(dot(viewDirection, reflectDir), 0.0), shininess);
+    spec = min(spec, 0.4);  // clamp especular para no quemar
     vec3 specular = lightSpecular * spec * material_specular;
 
-    vec3 finalRGB = ambient + diffuse + specular;
-    float finalAlpha = baseColor.a;
+    // --- Fill light (rebote desde abajo/costado, ilumina sombras) ---
+    vec3 fillDir = normalize(fillLightDir);
+    float fillDiff = max(dot(norm, fillDir), 0.0) * 0.6;
+    vec3 fill = fillLightColor * fillDiff * baseColor.rgb;
 
-    // Vidrio
+    vec3 finalRGB = ambient + diffuse + specular + fill;
+    float finalAlpha = baseColor.a * material_alpha;
+
+    // --- Vidrio con efecto Fresnel ---
     if (material_alpha < 0.99)
     {
-        vec3 glassTint = vec3(0.82, 0.88, 0.92);
-        finalRGB = mix(finalRGB, glassTint, 0.35);
-        finalAlpha = material_alpha;
+        // Fresnel: mas reflejo en angulos rasantes
+        float fresnel = pow(1.0 - max(dot(norm, viewDirection), 0.0), 3.0);
+        fresnel = clamp(fresnel, 0.0, 1.0);
+
+        // Tinte azul-gris del vidrio
+        vec3 glassTint = vec3(0.75, 0.85, 0.90);
+
+        // Reflejo especular fuerte en vidrio
+        float glassSpec = pow(max(dot(viewDirection, reflectDir), 0.0), 64.0);
+        vec3 glassReflect = vec3(glassSpec * 0.6);
+
+        // Combinar: color base translucido + tinte + fresnel + reflejo
+        finalRGB = mix(finalRGB * 0.5, glassTint, 0.25) + glassReflect + fresnel * 0.15;
+        finalAlpha = mix(material_alpha, 0.75, fresnel);  // mas opaco en angulos rasantes
     }
 
-    color = vec4(clamp(finalRGB, 0.0, 1.0), finalAlpha);
+    color = vec4(clamp(finalRGB, 0.0, 1.0), clamp(finalAlpha, 0.0, 1.0));
 }

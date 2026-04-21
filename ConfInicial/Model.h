@@ -41,7 +41,8 @@ private:
     void loadModel(string path)
     {
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        const aiScene* scene = importer.ReadFile(path,
+            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 
         if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -79,9 +80,15 @@ private:
             vector.z = mesh->mVertices[i].z;
             vertex.Position = vector;
 
-            vector.x = mesh->mNormals[i].x;
-            vector.y = mesh->mNormals[i].y;
-            vector.z = mesh->mNormals[i].z;
+            if (mesh->mNormals) {
+                vector.x = mesh->mNormals[i].x;
+                vector.y = mesh->mNormals[i].y;
+                vector.z = mesh->mNormals[i].z;
+            }
+            else {
+                vector = glm::vec3(0.0f, 1.0f, 0.0f);
+            }
+            
             vertex.Normal = vector;
 
             if (mesh->mTextureCoords[0])
@@ -134,11 +141,11 @@ private:
                 matName2.find("glass") != string::npos ||
                 matName2.find("window_glass") != string::npos)
             {
-                alpha = 0.9f;
+                alpha = 0.99f;
             }
             if (matName2.find("tree_foliage") != string::npos)
             {
-                alpha = 0.35f;
+                alpha = 0.45f;
             }
 
             vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");

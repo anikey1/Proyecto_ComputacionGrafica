@@ -9,10 +9,9 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Bricks092_2K-JPG_Color.jpg
 map_Ns Bricks092_2K-JPG_Roughness.jpg
 map_Bump -bm 1.000000 Bricks092_2K-JPG_NormalGL.jpg
-
+map_Kd Bricks092_2K-JPG_Color.jpg
 newmtl Concreto
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -21,10 +20,9 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Concrete037_2K-JPG_Color.jpg
 map_Ns Concrete037_2K-JPG_Roughness.jpg
 map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
-
+map_Kd Concrete037_2K-JPG_Color.jpg
 newmtl Concreto.001
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -35,7 +33,7 @@ d 1.000000
 illum 2
 map_Ns Concrete037_2K-JPG_Roughness.jpg
 map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
-
+map_Kd Concrete037_2K-JPG_Color.jpg
 newmtl Concreto.002
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -46,7 +44,7 @@ d 1.000000
 illum 2
 map_Ns Concrete037_2K-JPG_Roughness.jpg
 map_Bump -bm 1.000000 Concrete037_2K-JPG_NormalGL.jpg
-
+map_Kd Concrete037_2K-JPG_Color.jpg
 newmtl ConcretoBancas
 Ka 1.000000 1.000000 1.000000
 Kd 0.440000 0.430000 0.410000
@@ -57,7 +55,7 @@ d 1.000000
 illum 2
 map_Ns painted_concrete_02_rough_2k.exr
 map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
-
+map_Kd Concrete037_2K-JPG_Color.jpg
 newmtl FonodoVentanaMain
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -198,6 +196,26 @@ d 1.000000
 illum 2
 map_Kd maderaVidrio.png
 
+newmtl MarcoAuditorio
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Gloss.jpg
+
+newmtl MarcoAuditorio.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Gloss.jpg
+
 newmtl Material.001
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
@@ -248,10 +266,9 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd PavingStones029_2K-JPG_Color.jpg
 map_Ns PavingStones029_2K-JPG_Roughness.jpg
 map_Bump -bm 1.000000 PavingStones029_2K-JPG_NormalGL.jpg
-
+map_Kd PavingStones029_2K-JPG_Color.jpg
 newmtl PiedraPared
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -260,10 +277,9 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd stone_tiles_diff_2k.jpg
 map_Ns stone_tiles_rough_2k.exr
 map_Bump -bm 1.000000 stone_tiles_nor_gl_2k.exr
-
+map_Kd stone_tiles_diff_2k.jpg
 newmtl Poliigon_GrassPatchyGround_4585_2K
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -272,11 +288,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_GrassPatchyGround_4585_BaseColor.jpg
 map_Ns Poliigon_GrassPatchyGround_4585_Roughness.jpg
 map_refl Poliigon_GrassPatchyGround_4585_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_GrassPatchyGround_4585_Normal.png
-
+map_Kd Poliigon_GrassPatchyGround_4585_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -285,11 +300,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -299,9 +313,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.002
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -310,11 +323,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.003
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -323,11 +335,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.004
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -336,11 +347,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.005
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -349,11 +359,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.006
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -362,11 +371,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Ns Poliigon_SlateFloorTile_7657_Roughness.jpg
 map_refl Poliigon_SlateFloorTile_7657_Metallic.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.007
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -376,9 +384,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl Poliigon_SlateFloorTile_7657_2K.008
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -388,9 +395,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 map_Bump -bm 1.000000 Poliigon_SlateFloorTile_7657_Normal.png
-
+map_Kd Poliigon_SlateFloorTile_7657_BaseColor.jpg
 newmtl RailSides.001
 Ns 36.000000
 Ka 1.000000 1.000000 1.000000
@@ -434,16 +440,15 @@ map_Ns red_brick_03_rough_2k.exr
 newmtl TilesTravertine001_2K
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.860000 0.840000 0.780000
-Ks 0.300000 0.300000 0.300000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd TilesTravertine001_Col_2K.jpg
 map_refl TilesTravertine001_REFL_2K.jpg
 map_Bump -bm 1.000000 TilesTravertine001_NRM16_2K.tiff
-
+map_Kd TilesTravertine001_Col_2K.jpg
 newmtl UNAM
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -514,6 +519,16 @@ Ni 1.000000
 d 1.000000
 illum 2
 
+newmtl acero_brillante.001
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.850000 0.850000 0.870000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
 newmtl acero_inoxidable
 Ns 119.999992
 Ka 1.000000 1.000000 1.000000
@@ -525,6 +540,46 @@ d 1.000000
 illum 2
 
 newmtl acero_inoxidable.001
+Ns 119.999992
+Ka 1.000000 1.000000 1.000000
+Kd 0.780000 0.780000 0.780000
+Ks 0.900000 0.900000 0.900000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl acero_inoxidable.002
+Ns 119.999992
+Ka 1.000000 1.000000 1.000000
+Kd 0.780000 0.780000 0.780000
+Ks 0.900000 0.900000 0.900000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl acero_inoxidable.003
+Ns 119.999992
+Ka 1.000000 1.000000 1.000000
+Kd 0.780000 0.780000 0.780000
+Ks 0.900000 0.900000 0.900000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl acero_inoxidable.004
+Ns 119.999992
+Ka 1.000000 1.000000 1.000000
+Kd 0.780000 0.780000 0.780000
+Ks 0.900000 0.900000 0.900000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl acero_inoxidable.005
 Ns 119.999992
 Ka 1.000000 1.000000 1.000000
 Kd 0.780000 0.780000 0.780000
@@ -648,12 +703,12 @@ illum 2
 newmtl ceiling_light
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.980000 0.980000 0.960000
 Ks 0.150000 0.150000 0.150000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+map_Kd lamp.png
 
 newmtl chain_dark
 Ns 60.000008
@@ -675,16 +730,6 @@ Ni 1.500000
 d 1.000000
 illum 2
 
-newmtl concrete_ceiling
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.750000 0.750000 0.730000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
 newmtl concreto
 Ns 10.000005
 Ka 1.000000 1.000000 1.000000
@@ -695,243 +740,23 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl concreto_claro
-Ns 8.000002
+newmtl concreto.001
+Ns 10.000005
 Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
+Kd 0.480000 0.470000 0.450000
+Ks 0.050000 0.050000 0.050000
 Ke 0.000000 0.000000 0.000000
-Ni 1.500000
+Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl concreto_claro.001
-Ns 8.000002
+newmtl concreto.002
+Ns 10.000005
 Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
+Kd 0.480000 0.470000 0.450000
+Ks 0.050000 0.050000 0.050000
 Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.002
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.004
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.005
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.006
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.007
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_claro.008
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.740000 0.730000 0.690000
-Ks 0.056667 0.056667 0.056667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.001
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.002
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.004
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.005
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.006
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.007
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_medio.008
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.580000 0.570000 0.540000
-Ks 0.040000 0.040000 0.040000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.001
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.002
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.004
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.005
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.006
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.007
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl concreto_oscuro.008
-Ns 3.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.440000 0.430000 0.410000
-Ks 0.030000 0.030000 0.030000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
+Ni 1.000000
 d 1.000000
 illum 2
 
@@ -1045,16 +870,6 @@ Ni 1.500000
 d 1.000000
 illum 2
 
-newmtl galvanized_metal
-Ns 129.999985
-Ka 1.000000 1.000000 1.000000
-Kd 0.540000 0.560000 0.580000
-Ks 0.650000 0.650000 0.650000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
 newmtl glass
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -1068,12 +883,24 @@ illum 9
 newmtl glass_door
 Ns 220.000397
 Ka 1.000000 1.000000 1.000000
-Kd 0.450000 0.550000 0.600000
+Ks 0.900000 0.900000 0.900000
+Ke 0.000000 0.000000 0.000000
+Ni 2.500000
+d 1.000000
+illum 9
+map_Kd glass_frosted.png
+
+
+newmtl glass_door.001
+Ns 220.000397
+Ka 1.000000 1.000000 1.000000
 Ks 0.900000 0.900000 0.900000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.250000
+d 1.000000
 illum 9
+map_Kd glass_frosted.png
+
 
 newmtl grout_beige.001
 Ns 15.000002
@@ -1215,11 +1042,361 @@ Ni 1.500000
 d 1.000000
 illum 2
 
+newmtl mesas
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.001
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.002
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.003
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.004
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.005
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.006
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.007
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.008
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.009
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.010
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.011
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.012
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.013
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.014
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.015
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.016
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.017
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.018
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.019
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.020
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.021
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.022
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.023
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.024
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.025
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.026
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.027
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.028
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.029
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.030
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
+newmtl mesas.031
+Ka 1.000000 1.000000 1.000000
+Kd 0.440000 0.430000 0.410000
+Ks 0.030000 0.030000 0.030000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns painted_concrete_02_rough_2k.exr
+map_Bump -bm 1.000000 painted_concrete_02_nor_gl_2k.exr
+
 newmtl metalAmarillo
 Ka 1.000000 1.000000 1.000000
-Kd 0.920000 0.780000 0.050000
 Ks 0.800000 0.650000 0.100000
-Ns 120.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
@@ -1230,46 +1407,6 @@ map_refl Metal034_2K-JPG_Metalness.jpg
 map_Bump -bm 1.000000 Metal034_2K-JPG_NormalGL.jpg
 
 newmtl mural_dark_bg
-Ns 29.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.080000 0.100000 0.140000
-Ks 0.166667 0.166667 0.166667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl mural_dark_bg.001
-Ns 29.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.080000 0.100000 0.140000
-Ks 0.166667 0.166667 0.166667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl mural_dark_bg.002
-Ns 29.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.080000 0.100000 0.140000
-Ks 0.166667 0.166667 0.166667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl mural_dark_bg.003
-Ns 29.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.080000 0.100000 0.140000
-Ks 0.166667 0.166667 0.166667
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl mural_dark_bg.004
 Ns 29.999998
 Ka 1.000000 1.000000 1.000000
 Kd 0.080000 0.100000 0.140000
@@ -1448,6 +1585,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd pantalla.png
 
 newmtl pantalla.001
 Ns 250.000000
@@ -1458,6 +1596,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd pantalla.png
 
 newmtl piedr
 Ka 1.000000 1.000000 1.000000
@@ -1480,6 +1619,16 @@ Ni 1.500000
 d 1.000000
 illum 2
 
+newmtl pizarra
+Ns 29.999998
+Ka 1.000000 1.000000 1.000000
+Ks 0.166667 0.166667 0.166667
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd pizarra.png
+
 newmtl plastico_trasero
 Ns 29.999998
 Ka 1.000000 1.000000 1.000000
@@ -1501,6 +1650,26 @@ d 1.000000
 illum 2
 
 newmtl pumaagua
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd pumaagua.png
+
+newmtl pumaagua.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd pumaagua.png
+
+newmtl pumaagua.002
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
@@ -1533,12 +1702,12 @@ illum 2
 newmtl reflejo
 Ns 980.100037
 Ka 1.000000 1.000000 1.000000
-Kd 0.450000 0.550000 0.600000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd Ventanafonodo.jpg
 
 newmtl rivet_dark
 Ns 29.999998
@@ -1573,7 +1742,7 @@ illum 2
 newmtl tree_foliage
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
@@ -1583,17 +1752,17 @@ illum 9
 newmtl tree_foliage.001
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_foliage.002
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
@@ -1603,17 +1772,17 @@ illum 9
 newmtl tree_foliage.003
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-d 0.880000
+d 1.000000
 illum 9
 
 newmtl tree_foliage.004
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
@@ -1623,22 +1792,23 @@ illum 9
 newmtl tree_foliage.005
 Ns 8.000002
 Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
-Ks 0.053333 0.053333 0.053333
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 0.880000
-illum 9
-
-newmtl tree_foliage.006
-Ns 8.000002
-Ka 1.000000 1.000000 1.000000
-Kd 0.180000 0.420000 0.150000
+Kd 0.1 0.8 0.1
 Ks 0.053333 0.053333 0.053333
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 9
+
+newmtl tree_foliage.006
+Ns 8.000002
+Ka 1.000000 1.000000 1.000000
+Kd 0.1 0.8 0.1
+Ks 0.053333 0.053333 0.053333
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 9
+
 
 newmtl tree_trunk
 Ns 3.000000
@@ -1710,6 +1880,17 @@ Ni 1.500000
 d 1.000000
 illum 2
 
+newmtl tuberia
+Ka 1.000000 1.000000 1.000000
+Ks 0.650000 0.650000 0.650000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Metal049C_2K-JPG_Color.jpg
+map_Ns Metal049C_2K-JPG_Roughness.jpg
+map_refl Metal049C_2K-JPG_Metalness.jpg
+
 newmtl vent_dark
 Ns 79.999985
 Ka 1.000000 1.000000 1.000000
@@ -1729,6 +1910,17 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+
+newmtl wallWhite
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns polystyrene_rough_2k.exr
+map_Bump -bm 1.000000 polystyrene_nor_gl_2k.exr
 
 newmtl wheel_center
 Ns 119.999992
@@ -1771,16 +1963,6 @@ d 1.000000
 illum 2
 
 newmtl white_plaster
-Ns 4.999998
-Ka 1.000000 1.000000 1.000000
-Kd 0.920000 0.910000 0.890000
-Ks 0.050000 0.050000 0.050000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-
-newmtl white_plaster.001
 Ns 4.999998
 Ka 1.000000 1.000000 1.000000
 Kd 0.920000 0.910000 0.890000
