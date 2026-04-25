@@ -1,0 +1,14 @@
+# Blender 5.1.0 MTL File: 's3.blend'
+# www.blender.org
+
+newmtl aarcade.001
+Ns 0.000000
+Ka 0.031496 0.031496 0.031496
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/Basecolor_0_1.png
+map_Bump -bm 1.000000 textures/Normals_0_0.png
+

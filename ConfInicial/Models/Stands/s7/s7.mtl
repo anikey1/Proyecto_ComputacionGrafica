@@ -1,0 +1,87 @@
+# Blender 5.1.0 MTL File: 's7.blend'
+# www.blender.org
+
+newmtl 7alin
+Ns 8.928020
+Ka 0.370079 0.370079 0.370079
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/Basecolor_0.001.jpg
+map_Bump -bm 1.000000 textures/Normals_0.001.jpg
+
+newmtl Materiale.023
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.332754
+illum 6
+
+newmtl Scene_-_Root.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd textures/Imasdage_0.jpg
+map_Bump -bm 1.600000 textures/Immnbvage_2.jpg
+
+newmtl book_4_mat
+Ns 159.999985
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd textures/METACONFIDENTIAL.jpg
+
+newmtl material003
+Ns 34.239578
+Ka 0.417323 0.417323 0.417323
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/BOOTH.jpg
+
+newmtl material2
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/Basecolor_0.002.jpg
+map_Bump -bm 1.000000 textures/Normals_0.002.jpg
+
+newmtl material3
+Ns 13.950028
+Ka 0.433071 0.433071 0.433071
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/Basecolor_0.003.jpg
+map_Bump -bm 1.000000 textures/Normals_0.003.jpg
+
+newmtl simplygon
+Ns 59.582123
+Ka 0.685039 0.685039 0.685039
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd textures/Basecolor_0.jpg
+map_Bump -bm 1.000000 textures/Normals_0.jpg
