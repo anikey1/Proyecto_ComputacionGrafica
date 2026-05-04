@@ -1,6 +1,7 @@
 ﻿//Proyecto Final - IXANIK
 // Integrantes:
 //319323290
+//320260366
 
 #include <string>
 #include <iostream>
@@ -152,6 +153,165 @@ void UpdateBird() {
     AnimateBirdWings();
 }
 // ============================================================ PAJARO
+
+
+//  PERSONA - KEYFRAME ANIMATION CON CAMINATA LENTA
+
+Model* personBody = nullptr;
+Model* personRightArm = nullptr;
+Model* personLeftArm = nullptr;
+Model* personRightLeg = nullptr;
+Model* personLeftLeg = nullptr;
+bool  personVisible = true;
+
+// Posición fija de la persona
+const glm::vec3 PERSON_STAND_POS = glm::vec3(11.0f, 0.0f, 25.0f);
+// Punto hacia donde mira/señala, aproximadamente el stand
+const glm::vec3 PERSON_LOOK_STAND = glm::vec3(8.0f, 0.0f, 25.5f);
+// Ajuste general de orientacion del modelo.
+glm::vec3 personScale = glm::vec3(1.0f);
+const float PERSON_MODEL_FORWARD_OFFSET = 160.0f;
+
+
+// Valores que se actualizan cada frame.
+glm::vec3 personPos = PERSON_STAND_POS; 
+float personYaw = 0.0f;
+float personBodySideLean = 0.0f;
+float personBodyForwardLean = 0.0f;
+float personBodyBob = 0.0f;
+float personRightArmZ = -75.0f;
+float personLeftArmZ = 75.0f;
+float personRightArmX = 0.0f;
+float personLeftArmX = 0.0f;
+float personRightLegX = 0.0f;
+float personLeftLegX = 0.0f;
+
+float personAnimTime = 0.0f;
+
+float Clamp01(float t) {
+    if (t < 0.0f) return 0.0f;
+    if (t > 1.0f) return 1.0f;
+    return t;
+}
+
+float SmoothStep(float t) {
+    t = Clamp01(t);
+    return t * t * (3.0f - 2.0f * t);
+}
+
+float LerpFloat(float a, float b, float t) {
+    return a + (b - a) * t;
+}
+
+glm::vec3 LerpVec3(glm::vec3 a, glm::vec3 b, float t) {
+    return a + (b - a) * t;
+}
+
+float NormalizarAngulo(float angulo) {
+    while (angulo > 180.0f) angulo -= 360.0f;
+    while (angulo < -180.0f) angulo += 360.0f;
+    return angulo;
+}
+
+float LerpAngulo(float actual, float objetivo, float t) {
+    float diferencia = NormalizarAngulo(objetivo - actual);
+    return actual + diferencia * t;
+}
+
+float YawHaciaPunto(glm::vec3 desde, glm::vec3 hacia) {
+    glm::vec3 dir = hacia - desde;
+
+    return glm::degrees(atan2(dir.x, dir.z)) + PERSON_MODEL_FORWARD_OFFSET;
+}
+
+void ResetPoseReposo() {
+    personBodyBob = 0.0f;
+    personBodySideLean = 0.0f;
+    personBodyForwardLean = 0.0f;
+    personRightArmZ = -75.0f;
+    personLeftArmZ = 75.0f;
+    personRightArmX = 0.0f;
+    personLeftArmX = 0.0f;
+    personRightLegX = 0.0f;
+    personLeftLegX = 0.0f;
+}
+
+void UpdatePersonWalkStand() {
+    personAnimTime += deltaTime;
+
+    // La persona siempre se queda fija en esta posición
+    personPos = PERSON_STAND_POS;
+
+    // La persona mira hacia el stand
+    float yawLookStand = YawHaciaPunto(PERSON_STAND_POS, PERSON_LOOK_STAND);
+
+    // Ajuste fino de orientación.
+    // Si no mira bien al stand, cambia este valor.
+    yawLookStand += 8.0f;
+
+    personYaw = yawLookStand;
+
+    ResetPoseReposo();
+
+    // ---------- TIEMPOS DEL GESTO ----------
+    const float REST_TIME = 1.0f;       // espera en reposo
+    const float ARM_UP_TIME = 1.4f;     // levanta la mano
+    const float HOLD_TIME = 2.5f;       // mantiene señalando
+    const float ARM_DOWN_TIME = 1.3f;   // baja la mano
+    const float PAUSE_TIME = 1.2f;      // pausa antes de repetir
+
+    const float CYCLE_TIME = REST_TIME + ARM_UP_TIME + HOLD_TIME + ARM_DOWN_TIME + PAUSE_TIME;
+
+    float t = fmod(personAnimTime, CYCLE_TIME);
+
+    // ---------- ÁNGULOS DEL BRAZO ----------
+    // X mueve el brazo hacia enfrente
+    // Z controla qué tan abierto queda hacia un lado
+    const float ARM_FORWARD_X = 70.0f;
+    const float ARM_FORWARD_Z = -65.0f;
+
+    // 1) Reposo
+    if (t < REST_TIME) {
+        return;
+    }
+
+    // 2) Levanta la mano
+    else if (t < REST_TIME + ARM_UP_TIME) {
+        float p = (t - REST_TIME) / ARM_UP_TIME;
+        p = SmoothStep(p);
+
+        personRightArmX = LerpFloat(0.0f, ARM_FORWARD_X, p);
+        personRightArmZ = LerpFloat(-75.0f, ARM_FORWARD_Z, p);
+
+        personBodyForwardLean = LerpFloat(0.0f, -2.0f, p);
+    }
+
+    // 3) Mantiene la mano señalando
+    else if (t < REST_TIME + ARM_UP_TIME + HOLD_TIME) {
+        personRightArmX = ARM_FORWARD_X + sin(glfwGetTime() * 1.4f) * 1.5f;
+        personRightArmZ = ARM_FORWARD_Z;
+
+        personBodyForwardLean = -2.0f;
+    }
+
+    // 4) Baja la mano
+    else if (t < REST_TIME + ARM_UP_TIME + HOLD_TIME + ARM_DOWN_TIME) {
+        float p = (t - (REST_TIME + ARM_UP_TIME + HOLD_TIME)) / ARM_DOWN_TIME;
+        p = SmoothStep(p);
+
+        personRightArmX = LerpFloat(ARM_FORWARD_X, 0.0f, p);
+        personRightArmZ = LerpFloat(ARM_FORWARD_Z, -75.0f, p);
+
+        personBodyForwardLean = LerpFloat(-2.0f, 0.0f, p);
+    }
+
+    // 5) Pausa final
+    else {
+        return;
+    }
+}
+
+//============================================================ PERSONA
 int main()
 {
     glfwInit();
@@ -198,6 +358,15 @@ int main()
     birdWingLT = new Model((char*)"Models/Bird/alaIzq_punt.obj");
     birdTail = new Model((char*)"Models/Bird/cola.obj");
 
+
+    // Modelo de la persona separado por partes para poder animar los brazos.
+    personBody = new Model((char*)"Models/Persona/persona_cuerpo.obj");
+    personRightArm = new Model((char*)"Models/Persona/persona_brazo_derecho.obj");
+    personLeftArm = new Model((char*)"Models/Persona/persona_brazo_izquierdo.obj");
+    personRightLeg = new Model((char*)"Models/Persona/persona_pierna_derecha.obj");
+    personLeftLeg = new Model((char*)"Models/Persona/persona_pierna_izquierda.obj");
+
+
     glm::mat4 projection = glm::perspective(
         glm::radians(60.0f),
         (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
@@ -220,6 +389,7 @@ int main()
         glfwPollEvents();
         DoMovement();
         UpdateBird();
+        UpdatePersonWalkStand();
 
         glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -332,6 +502,63 @@ int main()
             birdWingLT->Draw(shader);
         }
 
+
+        //  DIBUJAR PERSONA CAMINANDO E INTERACTUANDO CON EL STAND
+        if (personVisible && personBody != nullptr && personRightArm != nullptr && personLeftArm != nullptr
+            && personRightLeg != nullptr && personLeftLeg != nullptr) {
+
+            glm::mat4 personBase = glm::mat4(1.0f);
+            personBase = glm::translate(personBase, personPos + glm::vec3(0.0f, personBodyBob, 0.0f));
+            personBase = glm::rotate(personBase, glm::radians(personYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+            personBase = glm::rotate(personBase, glm::radians(personBodyForwardLean), glm::vec3(1.0f, 0.0f, 0.0f));
+            personBase = glm::rotate(personBase, glm::radians(personBodySideLean), glm::vec3(0.0f, 0.0f, 1.0f));
+            personBase = glm::scale(personBase, personScale);
+
+            // Cuerpo sin brazos ni piernas
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(personBase));
+            personBody->Draw(shader);
+
+            // Brazo derecho
+            glm::vec3 pivotRightArm = glm::vec3(0.10f, 1.52f, 0.08f);
+            glm::mat4 rightArmMat = personBase;
+            rightArmMat = glm::translate(rightArmMat, pivotRightArm);
+            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmX), glm::vec3(1.0f, 0.0f, 0.0f));
+            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            rightArmMat = glm::translate(rightArmMat, -pivotRightArm);
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightArmMat));
+            personRightArm->Draw(shader);
+
+            // Brazo izquierdo
+            glm::vec3 pivotLeftArm = glm::vec3(-0.10f, 1.52f, 0.08f);
+            glm::mat4 leftArmMat = personBase;
+            leftArmMat = glm::translate(leftArmMat, pivotLeftArm);
+            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmX), glm::vec3(1.0f, 0.0f, 0.0f));
+            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            leftArmMat = glm::translate(leftArmMat, -pivotLeftArm);
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftArmMat));
+            personLeftArm->Draw(shader);
+
+            // Pierna derecha
+            glm::vec3 pivotRightLeg = glm::vec3(0.10f, 1.02f, 0.03f);
+            glm::mat4 rightLegMat = personBase;
+            rightLegMat = glm::translate(rightLegMat, pivotRightLeg);
+            rightLegMat = glm::rotate(rightLegMat, glm::radians(personRightLegX), glm::vec3(1.0f, 0.0f, 0.0f));
+            rightLegMat = glm::translate(rightLegMat, -pivotRightLeg);
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightLegMat));
+            personRightLeg->Draw(shader);
+
+            // Pierna izquierda
+            glm::vec3 pivotLeftLeg = glm::vec3(-0.06f, 1.02f, 0.03f);
+            glm::mat4 leftLegMat = personBase;
+            leftLegMat = glm::translate(leftLegMat, pivotLeftLeg);
+            leftLegMat = glm::rotate(leftLegMat, glm::radians(personLeftLegX), glm::vec3(1.0f, 0.0f, 0.0f));
+            leftLegMat = glm::translate(leftLegMat, -pivotLeftLeg);
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftLegMat));
+            personLeftLeg->Draw(shader);
+        }
+
+
+
         glfwSwapBuffers(window);
     }
 
@@ -344,6 +571,12 @@ int main()
     delete birdWingL;
     delete birdWingLT;
     delete birdTail;
+
+    delete personBody;
+    delete personRightArm;
+    delete personLeftArm;
+    delete personRightLeg;
+    delete personLeftLeg;
 
     glfwTerminate();
     return 0;
@@ -405,6 +638,10 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     // Ocultar/mostrar con H
     if (key == GLFW_KEY_H && selectedStand >= 0)
         standConfigs[selectedStand].visible = !standConfigs[selectedStand].visible;
+
+    // Ocultar/mostrar la persona con P
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+        personVisible = !personVisible;
 }
 
 void MouseCallback(GLFWwindow* window, double xPos, double yPos)

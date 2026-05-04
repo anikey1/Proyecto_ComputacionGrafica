@@ -1,0 +1,338 @@
+# Blender 5.1.0 MTL File: 'None'
+# www.blender.org
+
+newmtl Butterfly.006
+Ns 490.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Butterfly_Diffuse.jpg
+map_Ke Butterfly_Diffuse.jpg
+map_Bump -bm 1.000000 Butterfly_Normal.jpg
+
+newmtl Butterfly.007
+Ns 490.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Butterfly_Diffuse_0001.jpg
+map_Ke Butterfly_Diffuse_0001.jpg
+map_Bump -bm 1.000000 Butterfly_Normal_0001.jpg
+
+newmtl Butterfly.008
+Ns 490.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Butterfly_Diffuse_0002.jpg
+map_Ke Butterfly_Diffuse_0002.jpg
+map_Bump -bm 1.000000 Butterfly_Normal_0002.jpg
+
+newmtl Female_Angled_Base_Transparency.002
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Female_Angled_Base_Transparency_Diffuse.png
+map_d Female_Angled_Base_Transparency_Diffuse.png
+
+newmtl Female_Angled_Transparency.002
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Female_Angled_Transparency_Diffuse.png
+map_d Female_Angled_Transparency_Opacity.jpg
+
+newmtl Flower.009
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Flower_Diffuse.jpg
+map_d Flower_Opacity.jpg
+map_Bump -bm 1.000000 Flower_Normal.jpg
+
+newmtl Flower.010
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Flower_Diffuse_0001.jpg
+map_d Flower_Opacity_0001.jpg
+map_Bump -bm 1.000000 Flower_Normal_0001.jpg
+
+newmtl Flower.011
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Flower_Diffuse_0002.jpg
+map_d Flower_Opacity_0002.jpg
+map_Bump -bm 1.000000 Flower_Normal_0002.jpg
+
+newmtl Flower.012
+Ns 100.000015
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Flower_Diffuse_0003.jpg
+map_d Flower_Opacity_0003.jpg
+map_Bump -bm 1.000000 Flower_Normal_0003.jpg
+
+newmtl Material.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd saco.png
+
+newmtl Material.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd falda.png
+
+newmtl Material.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd piel.png
+
+newmtl Material.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd cabello.png
+
+newmtl Material.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd cabello.png
+
+newmtl Material.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd cabello.png
+
+newmtl Material.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd camisa.png
+
+newmtl Material.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd zapatos.png
+
+newmtl Pearl.009
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Pearl_Diffuse.jpg
+map_d Pearl_Opacity.jpg
+map_Bump -bm 1.000000 Pearl_Normal.jpg
+
+newmtl Pearl.010
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Pearl_Diffuse_0001.jpg
+map_d Pearl_Opacity_0001.jpg
+map_Bump -bm 1.000000 Pearl_Normal_0001.jpg
+
+newmtl Pearl.011
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Pearl_Diffuse_0002.jpg
+map_d Pearl_Opacity_0002.jpg
+map_Bump -bm 1.000000 Pearl_Normal_0002.jpg
+
+newmtl Pearl.012
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Pearl_Diffuse_0003.jpg
+map_d Pearl_Opacity_0003.jpg
+map_Bump -bm 1.000000 Pearl_Normal_0003.jpg
+
+newmtl Std_Cornea_L.002
+Ns 110.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.552786
+illum 9
+map_Kd Std_Cornea_L_Diffuse.jpg
+
+newmtl Std_Cornea_R.002
+Ns 110.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.552786
+illum 9
+map_Kd Std_Cornea_R_Diffuse.jpg
+
+newmtl Std_Eye_L.002
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Std_Eye_L_Diffuse.jpg
+map_Bump -bm 1.000000 Std_Eye_L_Normal.png
+
+newmtl Std_Eye_Occlusion_L.002
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Std_Eye_Occlusion_L_Diffuse.jpg
+map_d Std_Eye_Occlusion_R_Opacity.jpg
+
+newmtl Std_Eye_Occlusion_R.002
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Std_Eye_Occlusion_R_Diffuse.jpg
+map_d Std_Eye_Occlusion_R_Opacity.jpg
+
+newmtl Std_Eye_R.002
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Std_Eye_R_Diffuse.jpg
+map_Bump -bm 1.000000 Std_Eye_R_Normal.png
+
+newmtl Std_Lower_Teeth.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Std_Lower_Teeth_Diffuse.jpg
+map_Bump -bm 1.000000 Std_Lower_Teeth_Normal.png
+
+newmtl Std_Tearline_L.002
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Std_Tearline_L_Diffuse.jpg
+map_d Std_Tearline_R_Opacity.jpg
+
+newmtl Std_Tearline_R.002
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd Std_Tearline_R_Diffuse.jpg
+map_d Std_Tearline_R_Opacity.jpg
+
+newmtl Std_Tongue.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Std_Tongue_Diffuse.jpg
+map_Bump -bm 1.000000 Std_Tongue_Normal.jpg
+
+newmtl Std_Upper_Teeth.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Std_Upper_Teeth_Diffuse.jpg
+map_Bump -bm 1.000000 Std_Upper_Teeth_Normal.png
