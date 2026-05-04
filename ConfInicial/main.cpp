@@ -1,14 +1,8 @@
 ﻿// Proyecto Final - IXANIK
 // Integrantes:
-<<<<<<< HEAD
 //319323290
-//320260366
-=======
 // 320260366
-// 319323290
 // 320110450
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
-
 #include <string>
 #include <iostream>
 #include <vector>
@@ -157,7 +151,7 @@ void UpdateBird() {
 
     AnimateBirdWings();
 }
-<<<<<<< HEAD
+
 // ============================================================ PAJARO
 
 
@@ -318,7 +312,6 @@ void UpdatePersonWalkStand() {
 }
 
 //============================================================ PERSONA
-=======
 
 // ============================================================ 
 // ARDILLA - MODELADO JERÁRQUICO Y PATH ANIMATION
@@ -385,7 +378,6 @@ void UpdateSquirrel() {
     sqWalkAngle = (float)(sin(glfwGetTime() * 15.0) * 25.0);
 }
 
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
 int main()
 {
     glfwInit();
@@ -436,7 +428,7 @@ int main()
     birdWingLT = new Model((char*)"Models/Bird/alaIzq_punt.obj");
     birdTail = new Model((char*)"Models/Bird/cola.obj");
 
-<<<<<<< HEAD
+
 
     // Modelo de la persona separado por partes para poder animar los brazos.
     personBody = new Model((char*)"Models/Persona/persona_cuerpo.obj");
@@ -445,7 +437,6 @@ int main()
     personRightLeg = new Model((char*)"Models/Persona/persona_pierna_derecha.obj");
     personLeftLeg = new Model((char*)"Models/Persona/persona_pierna_izquierda.obj");
 
-=======
     // Cargar los archivos del modelo jerárquico de la ardilla
     sqBody = new Model((char*)"Models/ardilla/cuerpo.obj");
     sqLeg1 = new Model((char*)"Models/ardilla/pata1.obj");
@@ -453,7 +444,7 @@ int main()
     sqArm1 = new Model((char*)"Models/ardilla/mano1.obj");
     sqArm2 = new Model((char*)"Models/ardilla/mano2.obj");
     sqTail = new Model((char*)"Models/ardilla/cola.obj");
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
+
 
     glm::mat4 projection = glm::perspective(
         glm::radians(60.0f),
@@ -480,11 +471,10 @@ int main()
 
         // Procesar la lógica de transformaciones antes de realizar el renderizado
         UpdateBird();
-<<<<<<< HEAD
-        UpdatePersonWalkStand();
-=======
+
+
         UpdateSquirrel();
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
+
 
         glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -597,7 +587,6 @@ int main()
             birdWingLT->Draw(shader);
         }
 
-<<<<<<< HEAD
 
         //  DIBUJAR PERSONA CAMINANDO E INTERACTUANDO CON EL STAND
         if (personVisible && personBody != nullptr && personRightArm != nullptr && personLeftArm != nullptr
@@ -654,8 +643,6 @@ int main()
         }
 
 
-
-=======
         // ============================================================
         // RENDERIZAR ARDILLA
         // ============================================================
@@ -724,7 +711,6 @@ int main()
             sqLeg2->Draw(shader);
         }
 
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
         glfwSwapBuffers(window);
     }
 
@@ -739,21 +725,20 @@ int main()
     delete birdWingL;
     delete birdWingLT;
     delete birdTail;
-
-<<<<<<< HEAD
+    
     delete personBody;
     delete personRightArm;
     delete personLeftArm;
     delete personRightLeg;
     delete personLeftLeg;
-=======
+
     delete sqBody;
     delete sqLeg1;
     delete sqLeg2;
     delete sqArm1;
     delete sqArm2;
     delete sqTail;
->>>>>>> e5464dae22bfc6154d0e7c9253880ac48ef21b3d
+
 
     glfwTerminate();
     return 0;
