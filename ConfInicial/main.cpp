@@ -1,7 +1,7 @@
 ﻿// Proyecto Final - IXANIK
 // Integrantes:
-// 320260366
 // 319323290
+// 320260366
 // 320110450
 
 #include <string>
@@ -152,6 +152,7 @@ void UpdateBird() {
 
     AnimateBirdWings();
 }
+
 // ============================================================ PAJARO
 
 // ============================================================
@@ -613,6 +614,10 @@ int main()
         UpdatePersonAnimation();
         UpdateSquirrel();
 
+
+        UpdateSquirrel();
+
+
         glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -922,6 +927,7 @@ int main()
     delete sqArm1;
     delete sqArm2;
     delete sqTail;
+
 
     glfwTerminate();
     return 0;
