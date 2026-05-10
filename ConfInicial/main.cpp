@@ -3,22 +3,28 @@
 // 319323290
 // 320260366
 // 320110450
-
-#include <string>
+#include <GL/glew.h>
 #include <iostream>
-#include <vector>
 #include <cmath>
 
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-#include "Shader.h"
-#include "Camera.h"
-#include "Model.h"
+#include "stb_image.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "SOIL2/SOIL2.h"
+
+#include <string>
+#include <iostream>
+#include <vector>
+#include "Shader.h"
+#include "Camera.h"
+#include "Model.h"
+#include "modelAnim.h"
+#include "meshAnim.h"
+
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -153,49 +159,37 @@ void UpdateBird() {
     AnimateBirdWings();
 }
 
-// ============================================================ PAJARO
 
-// ============================================================
-// PERSONA - ANIMACIÓN POR KEYFRAMES 
-// ============================================================
+
+
+//  PERSONA - KEYFRAME ANIMATION CON CAMINATA LENTA
 
 Model* personBody = nullptr;
-Model* personHead = nullptr;
 Model* personRightArm = nullptr;
 Model* personLeftArm = nullptr;
 Model* personRightLeg = nullptr;
 Model* personLeftLeg = nullptr;
 bool  personVisible = true;
-Model* jointMarker = nullptr;
-bool showPersonJoints = true;
 
 // Posición fija de la persona
 const glm::vec3 PERSON_STAND_POS = glm::vec3(11.0f, 0.0f, 25.0f);
 // Punto hacia donde mira/señala, aproximadamente el stand
 const glm::vec3 PERSON_LOOK_STAND = glm::vec3(8.0f, 0.0f, 25.5f);
-// Ajuste general de orientación del modelo.
+// Ajuste general de orientacion del modelo.
 glm::vec3 personScale = glm::vec3(1.0f);
 const float PERSON_MODEL_FORWARD_OFFSET = 160.0f;
+
 
 // Valores que se actualizan cada frame.
 glm::vec3 personPos = PERSON_STAND_POS;
 float personYaw = 0.0f;
-
 float personBodySideLean = 0.0f;
 float personBodyForwardLean = 0.0f;
 float personBodyBob = 0.0f;
-
-float personHeadYaw = 0.0f;
-float personHeadPitch = 0.0f;
-
-float personRightArmX = 0.0f;
-float personRightArmY = 0.0f;
 float personRightArmZ = -75.0f;
-
-float personLeftArmX = 0.0f;
-float personLeftArmY = 0.0f;
 float personLeftArmZ = 75.0f;
-
+float personRightArmX = 0.0f;
+float personLeftArmX = 0.0f;
 float personRightLegX = 0.0f;
 float personLeftLegX = 0.0f;
 
@@ -233,75 +227,23 @@ float LerpAngulo(float actual, float objetivo, float t) {
 
 float YawHaciaPunto(glm::vec3 desde, glm::vec3 hacia) {
     glm::vec3 dir = hacia - desde;
+
     return glm::degrees(atan2(dir.x, dir.z)) + PERSON_MODEL_FORWARD_OFFSET;
 }
 
-struct PersonPose {
-    float bodySideLean;
-    float bodyForwardLean;
-    float bodyBob;
-
-    float headYaw;
-    float headPitch;
-
-    float rightArmX;
-    float rightArmY;
-    float rightArmZ;
-
-    float leftArmX;
-    float leftArmY;
-    float leftArmZ;
-
-    float rightLegX;
-    float leftLegX;
-};
-
-PersonPose LerpPose(const PersonPose& a, const PersonPose& b, float t) {
-    t = SmoothStep(t);
-
-    PersonPose r;
-    r.bodySideLean = LerpFloat(a.bodySideLean, b.bodySideLean, t);
-    r.bodyForwardLean = LerpFloat(a.bodyForwardLean, b.bodyForwardLean, t);
-    r.bodyBob = LerpFloat(a.bodyBob, b.bodyBob, t);
-
-    r.headYaw = LerpFloat(a.headYaw, b.headYaw, t);
-    r.headPitch = LerpFloat(a.headPitch, b.headPitch, t);
-
-    r.rightArmX = LerpFloat(a.rightArmX, b.rightArmX, t);
-    r.rightArmY = LerpFloat(a.rightArmY, b.rightArmY, t);
-    r.rightArmZ = LerpFloat(a.rightArmZ, b.rightArmZ, t);
-
-    r.leftArmX = LerpFloat(a.leftArmX, b.leftArmX, t);
-    r.leftArmY = LerpFloat(a.leftArmY, b.leftArmY, t);
-    r.leftArmZ = LerpFloat(a.leftArmZ, b.leftArmZ, t);
-
-    r.rightLegX = LerpFloat(a.rightLegX, b.rightLegX, t);
-    r.leftLegX = LerpFloat(a.leftLegX, b.leftLegX, t);
-
-    return r;
+void ResetPoseReposo() {
+    personBodyBob = 0.0f;
+    personBodySideLean = 0.0f;
+    personBodyForwardLean = 0.0f;
+    personRightArmZ = -75.0f;
+    personLeftArmZ = 75.0f;
+    personRightArmX = 0.0f;
+    personLeftArmX = 0.0f;
+    personRightLegX = 0.0f;
+    personLeftLegX = 0.0f;
 }
 
-void ApplyPersonPose(const PersonPose& p) {
-    personBodySideLean = p.bodySideLean;
-    personBodyForwardLean = p.bodyForwardLean;
-    personBodyBob = p.bodyBob;
-
-    personHeadYaw = p.headYaw;
-    personHeadPitch = p.headPitch;
-
-    personRightArmX = p.rightArmX;
-    personRightArmY = p.rightArmY;
-    personRightArmZ = p.rightArmZ;
-
-    personLeftArmX = p.leftArmX;
-    personLeftArmY = p.leftArmY;
-    personLeftArmZ = p.leftArmZ;
-
-    personRightLegX = p.rightLegX;
-    personLeftLegX = p.leftLegX;
-}
-
-void UpdatePersonAnimation() {
+void UpdatePersonWalkStand() {
     personAnimTime += deltaTime;
 
     // La persona siempre se queda fija en esta posición
@@ -309,147 +251,71 @@ void UpdatePersonAnimation() {
 
     // La persona mira hacia el stand
     float yawLookStand = YawHaciaPunto(PERSON_STAND_POS, PERSON_LOOK_STAND);
-    yawLookStand += 8.0f; // ajuste fino de orientación
+
+    // Ajuste fino de orientación.
+    // Si no mira bien al stand, cambia este valor.
+    yawLookStand += 8.0f;
+
     personYaw = yawLookStand;
 
-    // Poses principales del modelo jerárquico.
-    const float ARM_POINT_X = 70.0f;
-    const float ARM_POINT_Y = 0.0f;
-    const float ARM_POINT_Z = -65.0f;
+    ResetPoseReposo();
 
-    PersonPose restPose = {
-        0.0f, 0.0f, 0.0f,      // cuerpo
-        0.0f, 0.0f,            // cabeza
-        0.0f, 0.0f, -75.0f,    // brazo derecho
-        0.0f, 0.0f, 75.0f,     // brazo izquierdo
-        0.0f, 0.0f             // piernas
-    };
+    // ---------- TIEMPOS DEL GESTO ----------
+    const float REST_TIME = 1.0f;       // espera en reposo
+    const float ARM_UP_TIME = 1.4f;     // levanta la mano
+    const float HOLD_TIME = 2.5f;       // mantiene señalando
+    const float ARM_DOWN_TIME = 1.3f;   // baja la mano
+    const float PAUSE_TIME = 1.2f;      // pausa antes de repetir
 
-    PersonPose pointPose = restPose;
-    pointPose.bodyForwardLean = -2.0f;
-    pointPose.headYaw = -4.0f;
-    pointPose.rightArmX = ARM_POINT_X;
-    pointPose.rightArmY = ARM_POINT_Y;
-    pointPose.rightArmZ = ARM_POINT_Z;
-
-    PersonPose crossPose = restPose;
-    crossPose.bodyForwardLean = -1.5f;
-    crossPose.rightArmX = 125.0f;
-    crossPose.rightArmY = -55.0f;
-    crossPose.rightArmZ = -10.0f;
-    crossPose.leftArmX = 125.0f;
-    crossPose.leftArmY = 55.0f;
-    crossPose.leftArmZ = 10.0f;
-
-    // Tiempos del ciclo completo
-    const float REST_TIME = 0.0f;
-    const float ARM_UP_TIME = 1.2f;
-    const float POINT_HOLD_TIME = 1.7f;
-    const float ARM_DOWN_TIME = 1.1f;
-    const float CROSS_TIME = 
-        1.4f;
-    const float BREATH_TIME = 2.0f;
-    const float HEAD_SHAKE_TIME = 2.2f;
-    const float HEAD_CENTER_TIME = 0.8f;
-    const float UNCROSS_TIME = 1.3f;
-    const float PAUSE_TIME = 1.0f;
-
-    const float CYCLE_TIME = REST_TIME + ARM_UP_TIME + POINT_HOLD_TIME + ARM_DOWN_TIME +
-        CROSS_TIME + BREATH_TIME + HEAD_SHAKE_TIME + HEAD_CENTER_TIME + UNCROSS_TIME + PAUSE_TIME;
+    const float CYCLE_TIME = REST_TIME + ARM_UP_TIME + HOLD_TIME + ARM_DOWN_TIME + PAUSE_TIME;
 
     float t = fmod(personAnimTime, CYCLE_TIME);
-    //SECUENCIA DE LOS MOVIMIENTOS DE LA ANIMACION 
-    //1) Reposo
+
+    // ---------- ÁNGULOS DEL BRAZO ----------
+    // X mueve el brazo hacia enfrente
+    // Z controla qué tan abierto queda hacia un lado
+    const float ARM_FORWARD_X = 70.0f;
+    const float ARM_FORWARD_Z = -65.0f;
+
+    // 1) Reposo
     if (t < REST_TIME) {
-        ApplyPersonPose(restPose);
-        return;
-    }
-    t -= REST_TIME;
-
-    //2) Señala el stand
-    if (t < ARM_UP_TIME) {
-        float p = t / ARM_UP_TIME;
-        ApplyPersonPose(LerpPose(restPose, pointPose, p));
-        return;
-    }
-    t -= ARM_UP_TIME;
-
-    //3) Mantiene el brazo señalando
-    if (t < POINT_HOLD_TIME) {
-        PersonPose pose = pointPose;
-        pose.rightArmX += (float)sin(glfwGetTime() * 1.4f) * 1.5f;
-        pose.bodyForwardLean += (float)sin(glfwGetTime() * 1.0f) * 0.4f;
-        ApplyPersonPose(pose);
-        return;
-    }
-    t -= POINT_HOLD_TIME;
-
-    //4) Baja el brazo
-    if (t < ARM_DOWN_TIME) {
-        float p = t / ARM_DOWN_TIME;
-        ApplyPersonPose(LerpPose(pointPose, restPose, p));
-        return;
-    }
-    t -= ARM_DOWN_TIME;
-
-    //5) Cruza los brazos
-    if (t < CROSS_TIME) {
-        float p = t / CROSS_TIME;
-        ApplyPersonPose(LerpPose(restPose, crossPose, p));
-        return;
-    }
-    t -= CROSS_TIME;
-
-    //6) Respira y se balancea un poco con brazos cruzados
-    if (t < BREATH_TIME) {
-        PersonPose pose = crossPose;
-        float wave = (float)sin(glfwGetTime() * 2.2f);
-        //Movimiento de respiración
-        pose.bodyBob = wave * 0.035f;
-        //Balanceo un poco más marcado hacia un lado
-        pose.bodySideLean = 1.5f + wave * 1.5f;
-        //Movimiento leve de cabeza
-        pose.headPitch = wave * 2.0f;
-        //Simulacion de que se recarga más en una pierna
-        pose.rightLegX = -2.5f;              // pierna de apoyo, casi fija
-        pose.leftLegX = 6.0f + wave * 3.0f;  // pierna que se mueve poquito
-        ApplyPersonPose(pose);
         return;
     }
 
-    //7) Mueve la cabeza de lado a lado
-    if (t < HEAD_SHAKE_TIME) {
-        PersonPose pose = crossPose;
-        float p = t / HEAD_SHAKE_TIME;
-        float wave = (float)sin(glfwGetTime() * 2.2f);
-        pose.bodyBob = wave * 0.020f;
-        pose.bodySideLean = wave * 0.8f;
-        pose.headYaw = (float)sin(p * 6.2831853f * 1.5f) * 18.0f;
-        ApplyPersonPose(pose);
+    // 2) Levanta la mano
+    else if (t < REST_TIME + ARM_UP_TIME) {
+        float p = (t - REST_TIME) / ARM_UP_TIME;
+        p = SmoothStep(p);
+
+        personRightArmX = LerpFloat(0.0f, ARM_FORWARD_X, p);
+        personRightArmZ = LerpFloat(-75.0f, ARM_FORWARD_Z, p);
+
+        personBodyForwardLean = LerpFloat(0.0f, -2.0f, p);
+    }
+
+    // 3) Mantiene la mano señalando
+    else if (t < REST_TIME + ARM_UP_TIME + HOLD_TIME) {
+        personRightArmX = ARM_FORWARD_X + sin(glfwGetTime() * 1.4f) * 1.5f;
+        personRightArmZ = ARM_FORWARD_Z;
+
+        personBodyForwardLean = -2.0f;
+    }
+
+    // 4) Baja la mano
+    else if (t < REST_TIME + ARM_UP_TIME + HOLD_TIME + ARM_DOWN_TIME) {
+        float p = (t - (REST_TIME + ARM_UP_TIME + HOLD_TIME)) / ARM_DOWN_TIME;
+        p = SmoothStep(p);
+
+        personRightArmX = LerpFloat(ARM_FORWARD_X, 0.0f, p);
+        personRightArmZ = LerpFloat(ARM_FORWARD_Z, -75.0f, p);
+
+        personBodyForwardLean = LerpFloat(-2.0f, 0.0f, p);
+    }
+
+    // 5) Pausa final
+    else {
         return;
     }
-    t -= HEAD_SHAKE_TIME;
-
-    //8) Regresa la cabeza al centro
-    if (t < HEAD_CENTER_TIME) {
-        float p = t / HEAD_CENTER_TIME;
-        PersonPose headSidePose = crossPose;
-        headSidePose.headYaw = 18.0f;
-        ApplyPersonPose(LerpPose(headSidePose, crossPose, p));
-        return;
-    }
-    t -= HEAD_CENTER_TIME;
-
-    //9) Mueve los brazos a la posicion de inicio
-    if (t < UNCROSS_TIME) {
-        float p = t / UNCROSS_TIME;
-        ApplyPersonPose(LerpPose(crossPose, restPose, p));
-        return;
-    }
-    t -= UNCROSS_TIME;
-
-    //10) Pausa final antes de repetir
-    ApplyPersonPose(restPose);
 }
 
 //============================================================ PERSONA
@@ -480,6 +346,16 @@ float sqLerpT = 0.0f;
 glm::vec3 sqPos = sqPath[0];
 float sqYaw = 0.0f;
 float sqWalkAngle = 0.0f;
+
+
+// --- Variables para el nuevo personaje animado ---
+Shader* animShader;
+ModelAnim* animacionPersonaje;
+glm::vec3 posPersona = glm::vec3(15.0f, 0.0f, 25.0f); // Posición inicial
+float anglePersona = 180.0f;
+int estadoPersona = 0; // 0: Ida, 1: Pausa, 2: Vuelta, 3: Pausa
+float timerPausa = 0.0f;
+
 
 // Calcular las actualizaciones matemáticas de posición y rotación de la ardilla
 void UpdateSquirrel() {
@@ -569,14 +445,14 @@ int main()
     birdWingLT = new Model((char*)"Models/Bird/alaIzq_punt.obj");
     birdTail = new Model((char*)"Models/Bird/cola.obj");
 
-    // Cargar los archivos del modelo jerárquico de la persona
-    personBody = new Model((char*)"Models/Persona/persona_cuerpo_sin_cabeza.obj");
-    personHead = new Model((char*)"Models/Persona/persona_cabeza.obj");
+
+
+    // Modelo de la persona separado por partes para poder animar los brazos.
+    personBody = new Model((char*)"Models/Persona/persona_cuerpo.obj");
     personRightArm = new Model((char*)"Models/Persona/persona_brazo_derecho.obj");
     personLeftArm = new Model((char*)"Models/Persona/persona_brazo_izquierdo.obj");
     personRightLeg = new Model((char*)"Models/Persona/persona_pierna_derecha.obj");
     personLeftLeg = new Model((char*)"Models/Persona/persona_pierna_izquierda.obj");
-    jointMarker = new Model((char*)"Models/Persona/articulacion.obj");
 
     // Cargar los archivos del modelo jerárquico de la ardilla
     sqBody = new Model((char*)"Models/ardilla/cuerpo.obj");
@@ -585,6 +461,36 @@ int main()
     sqArm1 = new Model((char*)"Models/ardilla/mano1.obj");
     sqArm2 = new Model((char*)"Models/ardilla/mano2.obj");
     sqTail = new Model((char*)"Models/ardilla/cola.obj");
+
+
+    // --- Inicialización de Animación Esquelética ---
+    animShader = new Shader("Shader/anim.vs", "Shader/anim.frag");
+    animacionPersonaje = new ModelAnim("Models/persona1/persona1.fbx");
+    animacionPersonaje->initShaders(animShader->Program);
+
+    // --- CARGAR TEXTURA DE IXANIK A LA FUERZA ---
+    unsigned int texturaIxanik;
+    glGenTextures(1, &texturaIxanik);
+    glBindTexture(GL_TEXTURE_2D, texturaIxanik);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    // IMPORTANTE: Asegúrate de que esta ruta sea correcta
+    unsigned char* data = stbi_load("Models/persona1/p3hero.png", &width, &height, &nrChannels, 0);
+    if (data) {
+        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        printf("ERROR: No se encontro p3hero.png. Revisa la ruta.\n");
+    }
+    stbi_image_free(data);
+    // ---------------------------------------------
+
 
     glm::mat4 projection = glm::perspective(
         glm::radians(60.0f),
@@ -600,6 +506,21 @@ int main()
     birdFrames[2].wingAngle = -20.0f;
     BirdWingInterpolation();
 
+    // Variables para controlar el recorrido del personaje
+    glm::vec3 posPersona = glm::vec3(9.1f, 0.0f, -46.0f);
+    int estadoPersona = 0;
+    float timerPausa = 0.0f;     // <-- ¡Esta es la que faltaba!
+    float anglePersona = 0.0f;
+
+    // --- VARIABLES DEL CLON ---
+    glm::vec3 posPersona2 = glm::vec3(10.0f, 0.0f, 22.0f); // X=5.0f para que camine a un lado
+    int estadoPersona2 = 2;       // Inicia en 2 (Caminando de regreso)
+    float anglePersona2 = 180.0f; // Nace mirando hacia el origen (-46)
+
+
+    // Sincronizamos el reloj después de cargar los modelos para evitar el Pico de DeltaTime
+    lastFrame = glfwGetTime();
+
     while (!glfwWindowShouldClose(window))
     {
         GLfloat currentFrame = glfwGetTime();
@@ -611,12 +532,55 @@ int main()
 
         // Procesar la lógica de transformaciones antes de realizar el renderizado
         UpdateBird();
-        UpdatePersonAnimation();
-        UpdateSquirrel();
-
 
         UpdateSquirrel();
 
+        // --- LÓGICA DE RECORRIDO CONTINUO (Lobby FI) ---
+        float velocidadPersona = 4.0f * deltaTime;
+
+        if (estadoPersona == 0) { // Caminando hacia adelante
+            posPersona.z += velocidadPersona;
+            anglePersona = 0.0f;
+
+            // CANDADO: Forzamos la posición para que no se pase ni un milímetro
+            if (posPersona.z >= 22.0f) {
+                posPersona.z = 22.0f;     // ¡Freno de mano!
+                estadoPersona = 2;        // <-- CAMBIO: Pasa directo a caminar de regreso (Estado 2)
+            }
+        }
+        else if (estadoPersona == 2) { // Caminando de regreso
+            posPersona.z -= velocidadPersona;
+            anglePersona = 180.0f;
+
+            // CANDADO: Forzamos la posición en el origen
+            if (posPersona.z <= -46.0f) {
+                posPersona.z = -46.0f;  // ¡Freno de mano!
+                estadoPersona = 0;        // <-- CAMBIO: Pasa directo a caminar de ida (Estado 0)
+            }
+        }
+
+        // --- LÓGICA DE RECORRIDO DEL CLON (Inverso) ---
+        if (estadoPersona2 == 0) { // Ida (De -46 a 22)
+            posPersona2.z += velocidadPersona;
+            anglePersona2 = 0.0f;
+
+            if (posPersona2.z >= 22.0f) {
+                posPersona2.z = 22.0f;
+                estadoPersona2 = 2; // Pasa a regresar
+            }
+        }
+        else if (estadoPersona2 == 2) { // Regreso (De 22 a -46)
+            posPersona2.z -= velocidadPersona;
+            anglePersona2 = 180.0f;
+
+            if (posPersona2.z <= -46.0f) {
+                posPersona2.z = -46.0f;
+                estadoPersona2 = 0; // Pasa a avanzar
+            }
+        }
+
+        //  verificar coordenadas
+        printf("Posicion Z de Ixanik: %f\n", posPersona.z);
 
         glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -730,11 +694,9 @@ int main()
         }
 
 
-        // ============================================================
-        // RENDERIZAR PERSONA 
-        // ============================================================
-        if (personVisible && personBody != nullptr && personHead != nullptr && personRightArm != nullptr
-            && personLeftArm != nullptr && personRightLeg != nullptr && personLeftLeg != nullptr) {
+        //  DIBUJAR PERSONA CAMINANDO E INTERACTUANDO CON EL STAND
+        if (personVisible && personBody != nullptr && personRightArm != nullptr && personLeftArm != nullptr
+            && personRightLeg != nullptr && personLeftLeg != nullptr) {
 
             glm::mat4 personBase = glm::mat4(1.0f);
             personBase = glm::translate(personBase, personPos + glm::vec3(0.0f, personBodyBob, 0.0f));
@@ -743,44 +705,32 @@ int main()
             personBase = glm::rotate(personBase, glm::radians(personBodySideLean), glm::vec3(0.0f, 0.0f, 1.0f));
             personBase = glm::scale(personBase, personScale);
 
-            //Cuerpo sin cabeza
+            // Cuerpo sin brazos ni piernas
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(personBase));
             personBody->Draw(shader);
 
-            //Cabeza
-            glm::vec3 pivotHead = glm::vec3(0.02f, 1.56f, 0.06f);
-            glm::mat4 headMat = personBase;
-            headMat = glm::translate(headMat, pivotHead);
-            headMat = glm::rotate(headMat, glm::radians(personHeadYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-            headMat = glm::rotate(headMat, glm::radians(personHeadPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-            headMat = glm::translate(headMat, -pivotHead);
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(headMat));
-            personHead->Draw(shader);
-
-            //Brazo derecho
-            glm::vec3 pivotRightArm = glm::vec3(0.13f, 1.45f, 0.08f);
+            // Brazo derecho
+            glm::vec3 pivotRightArm = glm::vec3(0.10f, 1.52f, 0.08f);
             glm::mat4 rightArmMat = personBase;
             rightArmMat = glm::translate(rightArmMat, pivotRightArm);
             rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmX), glm::vec3(1.0f, 0.0f, 0.0f));
-            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmY), glm::vec3(0.0f, 1.0f, 0.0f));
             rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
             rightArmMat = glm::translate(rightArmMat, -pivotRightArm);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightArmMat));
             personRightArm->Draw(shader);
 
-            //Brazo izquierdo
-            glm::vec3 pivotLeftArm = glm::vec3(-0.13f, 1.45f, 0.08f);
+            // Brazo izquierdo
+            glm::vec3 pivotLeftArm = glm::vec3(-0.10f, 1.52f, 0.08f);
             glm::mat4 leftArmMat = personBase;
             leftArmMat = glm::translate(leftArmMat, pivotLeftArm);
             leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmX), glm::vec3(1.0f, 0.0f, 0.0f));
-            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmY), glm::vec3(0.0f, 1.0f, 0.0f));
             leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
             leftArmMat = glm::translate(leftArmMat, -pivotLeftArm);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftArmMat));
             personLeftArm->Draw(shader);
 
-            //Pie derecho
-            glm::vec3 pivotRightLeg = glm::vec3(0.08f, 0.92f, 0.03f);
+            // Pierna derecha
+            glm::vec3 pivotRightLeg = glm::vec3(0.10f, 1.02f, 0.03f);
             glm::mat4 rightLegMat = personBase;
             rightLegMat = glm::translate(rightLegMat, pivotRightLeg);
             rightLegMat = glm::rotate(rightLegMat, glm::radians(personRightLegX), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -788,46 +738,14 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightLegMat));
             personRightLeg->Draw(shader);
 
-            //Pie izquierdo
-            glm::vec3 pivotLeftLeg = glm::vec3(-0.08f, 0.92f, 0.03f);
+            // Pierna izquierda
+            glm::vec3 pivotLeftLeg = glm::vec3(-0.06f, 1.02f, 0.03f);
             glm::mat4 leftLegMat = personBase;
             leftLegMat = glm::translate(leftLegMat, pivotLeftLeg);
             leftLegMat = glm::rotate(leftLegMat, glm::radians(personLeftLegX), glm::vec3(1.0f, 0.0f, 0.0f));
             leftLegMat = glm::translate(leftLegMat, -pivotLeftLeg);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftLegMat));
             personLeftLeg->Draw(shader);
-
-
-            // ============================================================
-            // Aritciculaciones 
-            // ============================================================
-            if (showPersonJoints && jointMarker != nullptr) {
-
-                auto DrawJoint = [&](glm::vec3 pivot, float size) {
-                    glm::mat4 jointMat = personBase;
-                    //jointMat = glm::translate(jointMat, pivot);
-                    jointMat = glm::translate(jointMat, pivot + glm::vec3(0.0f, 0.045f, 0.0f));
-                    jointMat = glm::scale(jointMat, glm::vec3(size));
-
-                    glUniformMatrix4fv(
-                        glGetUniformLocation(shader.Program, "model"),
-                        1,
-                        GL_FALSE,
-                        glm::value_ptr(jointMat)
-                    );
-
-                    jointMarker->Draw(shader);
-                    };
-
-                // Cuello / cabeza
-                DrawJoint(pivotHead, 0.06f);
-                // Hombros
-                DrawJoint(pivotRightArm, 0.37f);
-                DrawJoint(pivotLeftArm, 0.37f);
-                // Caderas / piernas
-                DrawJoint(pivotRightLeg, 0.06f);
-                DrawJoint(pivotLeftLeg, 0.06f);
-            }
         }
 
 
@@ -844,7 +762,7 @@ int main()
             sqBase = glm::rotate(sqBase, glm::radians(sqYaw), glm::vec3(0, 1, 0));
 
             // Reducir la escala (0.3) para evitar colisiones volumétricas en el escenario
-            sqBase = glm::scale(sqBase, glm::vec3(0.3f));
+            sqBase = glm::scale(sqBase, glm::vec3(0.2f));
 
             // Dibujar el torso como centro del modelado jerárquico
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(sqBase));
@@ -899,6 +817,58 @@ int main()
             sqLeg2->Draw(shader);
         }
 
+        // RENDERIZAR PERSONA CON ESQUELETO (PASO 4)
+
+        animShader->Use();
+
+        GLuint modelLoc = glGetUniformLocation(animShader->Program, "model");
+        GLuint viewLoc = glGetUniformLocation(animShader->Program, "view");
+        GLuint projLoc = glGetUniformLocation(animShader->Program, "projection");
+
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.direction"), -0.3f, -1.0f, -0.3f);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.ambient"), 0.5f, 0.5f, 0.5f);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.diffuse"), 0.6f, 0.6f, 0.6f);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.specular"), 0.3f, 0.3f, 0.3f);
+        glUniform3f(glGetUniformLocation(animShader->Program, "material.specular"), 0.5f, 0.5f, 0.5f);
+        glUniform1f(glGetUniformLocation(animShader->Program, "material.shininess"), 32.0f);
+        glUniform3f(glGetUniformLocation(animShader->Program, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+
+        // 3. Dibujamos
+        glm::mat4 modelAnim = glm::mat4(1.0f);
+        modelAnim = glm::translate(modelAnim, posPersona);
+        modelAnim = glm::rotate(modelAnim, glm::radians(anglePersona), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelAnim = glm::scale(modelAnim, glm::vec3(0.013f));
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim));
+        printf("Posicion Z de Ixanik: %f\n", posPersona.z);
+
+        // 1. Prendemos el bypass
+        glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texturaIxanik);
+        glUniform1i(glGetUniformLocation(animShader->Program, "texturaForzada"), 1);
+
+        // --- DIBUJAMOS A LA PERSONA 1  ---
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim));
+        animacionPersonaje->Draw(*animShader);
+
+        // --- DIBUJAMOS A LA PERSONA 2 (El Clon) ---
+        glm::mat4 modelAnim2 = glm::mat4(1.0f);
+        modelAnim2 = glm::translate(modelAnim2, posPersona2);
+        modelAnim2 = glm::rotate(modelAnim2, glm::radians(anglePersona2), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelAnim2 = glm::scale(modelAnim2, glm::vec3(0.013f)); // La misma escala pequeñita
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim2));
+        animacionPersonaje->Draw(*animShader); 
+
+        // 4. Apagamos el bypass 
+        glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 0);
+
         glfwSwapBuffers(window);
     }
 
@@ -915,7 +885,6 @@ int main()
     delete birdTail;
 
     delete personBody;
-    delete personHead;
     delete personRightArm;
     delete personLeftArm;
     delete personRightLeg;
@@ -928,6 +897,8 @@ int main()
     delete sqArm2;
     delete sqTail;
 
+    delete animacionPersonaje;
+    delete animShader;
 
     glfwTerminate();
     return 0;

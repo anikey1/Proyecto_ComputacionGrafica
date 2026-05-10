@@ -24,6 +24,12 @@
     <ClInclude Include="Camera.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="modelAnim.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="meshAnim.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\modelLoading.frag">
@@ -42,6 +48,12 @@
       <Filter>Archivos de origen\NewFilter1</Filter>
     </None>
     <None Include="Shader\lighting.vs">
+      <Filter>Archivos de origen\NewFilter1</Filter>
+    </None>
+    <None Include="Shader\anim.vs">
+      <Filter>Archivos de origen\NewFilter1</Filter>
+    </None>
+    <None Include="Shader\anim.frag">
       <Filter>Archivos de origen\NewFilter1</Filter>
     </None>
   </ItemGroup>
