@@ -6,11 +6,17 @@ in vec2 TexCoords;
 out vec4 color;
 
 uniform sampler2D texture_diffuse1;
+
+uniform int usarTexturaForzada;
+uniform sampler2D texturaForzada;
+
 uniform int hasDiffuseTexture;
 uniform vec3 material_diffuse;
 uniform vec3 material_specular;
 uniform float material_shininess;
 uniform float material_alpha;
+
+
 
 uniform vec3 viewPos;
 uniform vec3 lightDir;
@@ -25,10 +31,19 @@ uniform vec3 fillLightColor;
 void main()
 {
     vec4 baseColor;
-    if (hasDiffuseTexture == 1)
-        baseColor = texture(texture_diffuse1, TexCoords);
-    else
-        baseColor = vec4(material_diffuse, 1.0);
+
+if (usarTexturaForzada == 1)
+{
+    baseColor = texture(texturaForzada, TexCoords);
+}
+else if (hasDiffuseTexture == 1)
+{
+    baseColor = texture(texture_diffuse1, TexCoords);
+}
+else
+{
+    baseColor = vec4(material_diffuse, 1.0);
+}
 
     if (baseColor.a < 0.05)
         discard;

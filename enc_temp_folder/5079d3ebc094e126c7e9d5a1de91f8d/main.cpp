@@ -641,15 +641,21 @@ int main()
 	Model ConsejoTecnico((char*)"Models/Letreros/modelo_cartel_consejo_tecnico.obj");
 	Model SSA((char*)"Models/Letreros/modelo_cartel_ssa.obj");
 	Model DCSyH((char*)"Models/Letreros/modelo_cartel_dscyh.obj");
+
 	Model ZonaRiesgo((char*)"Models/Letreros/modelo_cartel_zona_riesgo.obj");
+
 	Model Lona((char*)"Models/Letreros/cartel_lona.obj");
+
 	Model CartelesInfo((char*)"Models/Letreros/modelo_carteles_informativos.obj");
 
 
     //cargar archivos del modelo para la pantalla dinamica 
 	Model Pantalla((char*)"Models/PantallaDinamica/pantalla.obj");
+
     const int NUM_TEXTURAS_OBJETO = 4;
+
     GLuint texturasObjeto[NUM_TEXTURAS_OBJETO];
+
     texturasObjeto[0] = CargarTexturaDesdeCodigo("Models/PantallaDinamica/Texturas/img/bienvenida.jpg");
     texturasObjeto[1] = CargarTexturaDesdeCodigo("Models/PantallaDinamica/Texturas/img/IA.jpg");
     texturasObjeto[2] = CargarTexturaDesdeCodigo("Models/PantallaDinamica/Texturas/img/redes.jpg");
@@ -842,9 +848,10 @@ int main()
         }
 
         // ============================================================
-        // OBJETO CON CAMBIO DE TEXTURA
-        // ============================================================
+// RENDERIZAR OBJETO CON CAMBIO DE TEXTURA
+// ============================================================
         glm::mat4 modelObjeto = glm::mat4(1.0f);
+
         modelObjeto = glm::translate(modelObjeto, glm::vec3(11.7f, 2.0f, 18.1f));
         modelObjeto = glm::rotate(modelObjeto, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         modelObjeto = glm::scale(modelObjeto, glm::vec3(1.2f));
@@ -858,99 +865,111 @@ int main()
 
         // Calcular qué textura se usa
         int texturaActual = ((int)(glfwGetTime() * 0.8f)) % NUM_TEXTURAS_OBJETO;
+
         // Activar textura forzada solo para la pantalla
         glUniform1i(glGetUniformLocation(shader.Program, "usarTexturaForzada"), 1);
+
         // Activar la textura animada
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texturasObjeto[texturaActual]);
+
+        // Mandar la textura al shader
         glUniform1i(glGetUniformLocation(shader.Program, "texturaForzada"), 0);
+
+        // Dibujar pantalla
         Pantalla.Draw(shader);
+
         // Apagar textura forzada
         glUniform1i(glGetUniformLocation(shader.Program, "usarTexturaForzada"), 0);
    
 
         //  ------- LETREROS -------
+        // 
+        // 
+
 		glm::mat4 modelCartelesInfo = glm::mat4(1.0f);
-		modelCartelesInfo = glm::translate(modelCartelesInfo, glm::vec3(11.7f, 2.16f, 13.58f)); 
+		modelCartelesInfo = glm::translate(modelCartelesInfo, glm::vec3(11.7f, 2.3f, 14.0f)); // Posición del letrero
+		//modelCartelesInfo = glm::rotate(modelCartelesInfo, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotar para que quede vertical
+		//modelCartelesInfo = glm::scale(modelCartelesInfo, glm::vec3(1.0f)); // Ajustar el tamaño del letrero
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCartelesInfo));
 		CartelesInfo.Draw(shader);
 
 		glm::mat4 modelAula = glm::mat4(1.0f);
-		modelAula = glm::translate(modelAula, glm::vec3(11.75f, 2.2f, 0.0f)); 
-		modelAula = glm::rotate(modelAula, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelAula = glm::rotate(modelAula, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelAula = glm::translate(modelAula, glm::vec3(11.75f, 2.2f, 0.0f)); // Posición del letrero
+		modelAula = glm::rotate(modelAula, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelAula = glm::rotate(modelAula, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAula));
         AulaMagna.Draw(shader);
 
 		glm::mat4 modelFlecha = glm::mat4(1.0f);
-		modelFlecha = glm::translate(modelFlecha, glm::vec3(11.75f, 3.3f, 13.5f)); 
-		modelFlecha = glm::rotate(modelFlecha, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelFlecha = glm::rotate(modelFlecha, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelFlecha = glm::translate(modelFlecha, glm::vec3(11.75f, 3.3f, 13.5f)); // Posición del letrero
+		modelFlecha = glm::rotate(modelFlecha, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelFlecha = glm::rotate(modelFlecha, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlecha));
 		PlacaFlecha.Draw(shader);
 
 		glm::mat4 modelCartelAzul = glm::mat4(1.0f);
-		modelCartelAzul = glm::translate(modelCartelAzul, glm::vec3(11.75f, 3.5f, 13.5f)); 
-		modelCartelAzul = glm::rotate(modelCartelAzul, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelCartelAzul = glm::rotate(modelCartelAzul, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelCartelAzul = glm::translate(modelCartelAzul, glm::vec3(11.75f, 3.5f, 13.5f)); // Posición del letrero
+		modelCartelAzul = glm::rotate(modelCartelAzul, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelCartelAzul = glm::rotate(modelCartelAzul, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCartelAzul));
 		CartelAzul.Draw(shader);
 
 		glm::mat4 modelUnionProf = glm::mat4(1.0f);
-		modelUnionProf = glm::translate(modelUnionProf, glm::vec3(10.78f, 2.8f, 9.7f)); 
-		modelUnionProf = glm::rotate(modelUnionProf, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelUnionProf = glm::rotate(modelUnionProf, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelUnionProf = glm::translate(modelUnionProf, glm::vec3(10.78f, 2.8f, 9.7f)); // Posición del letrero
+		modelUnionProf = glm::rotate(modelUnionProf, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelUnionProf = glm::rotate(modelUnionProf, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelUnionProf));
 		UnionProf.Draw(shader);
         
         glm::mat4 modelUnionProfSA = glm::mat4(1.0f);
-        modelUnionProfSA = glm::translate(modelUnionProfSA, glm::vec3(11.7f, 2.35f, 6.9f)); 
-        modelUnionProfSA = glm::rotate(modelUnionProfSA, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-        modelUnionProfSA = glm::rotate(modelUnionProfSA, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+        modelUnionProfSA = glm::translate(modelUnionProfSA, glm::vec3(11.7f, 2.35f, 6.9f)); // Posición del letrero
+        modelUnionProfSA = glm::rotate(modelUnionProfSA, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+        modelUnionProfSA = glm::rotate(modelUnionProfSA, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelUnionProfSA));
         UnionProfSA.Draw(shader);
 
 		glm::mat4 modelConsejoTecnico = glm::mat4(1.0f);
-		modelConsejoTecnico = glm::translate(modelConsejoTecnico, glm::vec3(11.7f, 2.35f, -4.5f)); 
-		modelConsejoTecnico = glm::rotate(modelConsejoTecnico, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelConsejoTecnico = glm::rotate(modelConsejoTecnico, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelConsejoTecnico = glm::translate(modelConsejoTecnico, glm::vec3(11.7f, 2.35f, -4.5f)); // Posición del letrero
+		modelConsejoTecnico = glm::rotate(modelConsejoTecnico, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelConsejoTecnico = glm::rotate(modelConsejoTecnico, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelConsejoTecnico));
 		ConsejoTecnico.Draw(shader);
 
         glm::mat4 modelSSA = glm::mat4(1.0f);
-        modelSSA = glm::translate(modelSSA, glm::vec3(11.7f, 2.35f, -11.0f)); 
-        modelSSA = glm::rotate(modelSSA, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-        modelSSA = glm::rotate(modelSSA, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+        modelSSA = glm::translate(modelSSA, glm::vec3(11.7f, 2.35f, -11.0f)); // Posición del letrero
+        modelSSA = glm::rotate(modelSSA, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+        modelSSA = glm::rotate(modelSSA, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSSA));
         SSA.Draw(shader);
 
         glm::mat4 modelDCSyH = glm::mat4(1.0f);
-        modelDCSyH = glm::translate(modelDCSyH, glm::vec3(11.7f, 2.35f, -17.0f)); 
-        modelDCSyH = glm::rotate(modelDCSyH, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-        modelDCSyH = glm::rotate(modelDCSyH, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+        modelDCSyH = glm::translate(modelDCSyH, glm::vec3(11.7f, 2.35f, -17.0f)); // Posición del letrero
+        modelDCSyH = glm::rotate(modelDCSyH, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+        modelDCSyH = glm::rotate(modelDCSyH, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelDCSyH));
         DCSyH.Draw(shader);
 
         glm::mat4 modelFlecha2 = glm::mat4(1.0f);
-        modelFlecha2 = glm::translate(modelFlecha2, glm::vec3(11.75f, 2.5f, 0.0f)); 
-        modelFlecha2 = glm::rotate(modelFlecha2, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-        modelFlecha2 = glm::rotate(modelFlecha2, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+        modelFlecha2 = glm::translate(modelFlecha2, glm::vec3(11.75f, 2.5f, 0.0f)); // Posición del letrero
+        modelFlecha2 = glm::rotate(modelFlecha2, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+        modelFlecha2 = glm::rotate(modelFlecha2, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlecha2));
         PlacaFlecha.Draw(shader);
 
 		glm::mat4 modelZonaRiesgo = glm::mat4(1.0f);
-		modelZonaRiesgo = glm::translate(modelZonaRiesgo, glm::vec3(10.8f, 3.0f, -22.8f)); 
+		modelZonaRiesgo = glm::translate(modelZonaRiesgo, glm::vec3(10.8f, 3.0f, -22.8f)); // Posición del letrero
 		modelZonaRiesgo = glm::scale(modelZonaRiesgo, glm::vec3(1.5f));
-		modelZonaRiesgo = glm::rotate(modelZonaRiesgo, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
-		modelZonaRiesgo = glm::rotate(modelZonaRiesgo, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); 
+		modelZonaRiesgo = glm::rotate(modelZonaRiesgo, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotar para que quede vertical
+		modelZonaRiesgo = glm::rotate(modelZonaRiesgo, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotar para que quede orientado hacia el pasillo
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelZonaRiesgo));
         ZonaRiesgo.Draw(shader);
 
 
 		glm::mat4 modelLona = glm::mat4(1.0f);
-		modelLona = glm::translate(modelLona, glm::vec3(10.8f, 1.0f, -18.0f)); 
-		modelLona = glm::rotate(modelLona, glm::radians(120.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
-		modelLona = glm::scale(modelLona, glm::vec3(2.0f)); 
+		modelLona = glm::translate(modelLona, glm::vec3(10.8f, 1.0f, -18.0f)); // Posición del letrero
+		modelLona = glm::rotate(modelLona, glm::radians(120.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotar para que quede orientado hacia el pasillo
+		modelLona = glm::scale(modelLona, glm::vec3(2.0f)); // Escalar para que se vea mejor, ya que el modelo original es muy pequeño
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelLona));
 		Lona.Draw(shader);
 
