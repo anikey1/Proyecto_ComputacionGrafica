@@ -3,6 +3,8 @@
 // 319323290
 // 320260366
 // 320110450
+
+//Entrega: 13 de mayo, 2025
 #include <GL/glew.h>
 #include <iostream>
 #include <cmath>
@@ -79,6 +81,8 @@ const glm::vec3 BIRD_START = glm::vec3(9.0f, 3.9f, 25.0f);
 const glm::vec3 BIRD_END = glm::vec3(9.0f, 3.9f, -30.0f);
 const float BIRD_SPEED = 3.0f;
 bool birdVisible = true;
+bool birdMoving = true;
+bool sqMoving = true;
 
 float wingRightAngle = 0.0f;
 float wingLeftAngle = 0.0f;
@@ -90,7 +94,7 @@ typedef struct {
 } BirdWingFrame;
 
 BirdWingFrame birdFrames[BIRD_MAX_FRAMES];
-int birdMaxSteps = 70;
+int birdMaxSteps = 10;
 int birdCurrSteps = 0;
 int birdPlayIndex = 0;
 
@@ -128,21 +132,22 @@ void UpdateBird() {
         AnimateBirdWings();
         return;
     }
-    birdPos.z += birdDirZ * BIRD_SPEED * deltaTime;
-    birdPos.y = BIRD_START.y + 0.3f * sinf((float)glfwGetTime() * 2.0f);
-    birdPos.x = BIRD_START.x + 0.4f * sinf((float)glfwGetTime() * 0.7f);
-
-    if (birdPos.z <= BIRD_END.z) {
-        birdPos.z = BIRD_END.z + 0.1f;
-        birdDirZ = 1.0f;
-        birdTargetAngle = birdFacingAngle + 180.0f;
-        birdTurning = true;
-    }
-    if (birdPos.z >= BIRD_START.z) {
-        birdPos.z = BIRD_START.z - 0.1f;
-        birdDirZ = -1.0f;
-        birdTargetAngle = birdFacingAngle - 180.0f;
-        birdTurning = true;
+    if (birdMoving) {
+        birdPos.z += birdDirZ * BIRD_SPEED * deltaTime;
+        birdPos.y = BIRD_START.y + 0.3f * sinf((float)glfwGetTime() * 2.0f);
+        birdPos.x = BIRD_START.x + 0.4f * sinf((float)glfwGetTime() * 0.7f);
+        if (birdPos.z <= BIRD_END.z) {
+            birdPos.z = BIRD_END.z + 0.1f;
+            birdDirZ = 1.0f;
+            birdTargetAngle = birdFacingAngle + 180.0f;
+            birdTurning = true;
+        }
+        if (birdPos.z >= BIRD_START.z) {
+            birdPos.z = BIRD_START.z - 0.1f;
+            birdDirZ = -1.0f;
+            birdTargetAngle = birdFacingAngle - 180.0f;
+            birdTurning = true;
+        }
     }
     AnimateBirdWings();
 }
@@ -191,20 +196,11 @@ float SmoothStep(float t) {
     t = Clamp01(t);
     return t * t * (3.0f - 2.0f * t);
 }
-float LerpFloat(float a, float b, float t) {
-    return a + (b - a) * t;
-}
-glm::vec3 LerpVec3(glm::vec3 a, glm::vec3 b, float t) {
-    return a + (b - a) * t;
-}
+float LerpFloat(float a, float b, float t) { return a + (b - a) * t; }
 float NormalizarAngulo(float angulo) {
     while (angulo > 180.0f) angulo -= 360.0f;
     while (angulo < -180.0f) angulo += 360.0f;
     return angulo;
-}
-float LerpAngulo(float actual, float objetivo, float t) {
-    float diferencia = NormalizarAngulo(objetivo - actual);
-    return actual + diferencia * t;
 }
 float YawHaciaPunto(glm::vec3 desde, glm::vec3 hacia) {
     glm::vec3 dir = hacia - desde;
@@ -257,10 +253,7 @@ void ApplyPersonPose(const PersonPose& p) {
 void UpdatePersonAnimation() {
     personAnimTime += deltaTime;
     personPos = PERSON_STAND_POS;
-
-    float yawLookStand = YawHaciaPunto(PERSON_STAND_POS, PERSON_LOOK_STAND);
-    yawLookStand += 8.0f;
-    personYaw = yawLookStand;
+    personYaw = YawHaciaPunto(PERSON_STAND_POS, PERSON_LOOK_STAND) + 8.0f;
 
     // ---- Poses ----
     PersonPose restPose = {
@@ -271,13 +264,16 @@ void UpdatePersonAnimation() {
         0.0f, 0.0f
     };
 
+    // Señala: brazo a 45° (natural, no exagerado)
     PersonPose pointPose = restPose;
-    pointPose.bodyForwardLean = -2.0f;
-    pointPose.headYaw = -4.0f;
-    pointPose.rightArmX = 70.0f;
-    pointPose.rightArmY = 0.0f;
-    pointPose.rightArmZ = -65.0f;
+    pointPose.bodyForwardLean = -1.5f;
+    pointPose.headYaw = -6.0f;   // mira hacia el stand
+    pointPose.headPitch = -3.0f;   // ligero tilt hacia abajo
+    pointPose.rightArmX = 45.0f;  // antes 70 — mucho más natural
+    pointPose.rightArmY = -5.0f;
+    pointPose.rightArmZ = -55.0f;
 
+    // Brazos cruzados
     PersonPose crossPose = restPose;
     crossPose.bodyForwardLean = -1.5f;
     crossPose.rightArmX = 125.0f;
@@ -287,43 +283,71 @@ void UpdatePersonAnimation() {
     crossPose.leftArmY = 55.0f;
     crossPose.leftArmZ = 10.0f;
 
-    // ---- Tiempos del ciclo (declarados UNA sola vez) ----
-    const float REST_TIME = 0.0f;
-    const float ARM_UP_TIME = 1.2f;
-    const float POINT_HOLD_TIME = 1.7f;
-    const float ARM_DOWN_TIME = 1.1f;
-    const float CROSS_TIME = 1.4f;
-    const float BREATH_TIME = 2.0f;
-    const float HEAD_SHAKE_TIME = 2.2f;
-    const float HEAD_CENTER_TIME = 0.8f;
-    const float UNCROSS_TIME = 1.3f;
-    const float PAUSE_TIME = 1.0f;
-    const float CYCLE_TIME = REST_TIME + ARM_UP_TIME + POINT_HOLD_TIME + ARM_DOWN_TIME +
+    // NUEVA POSE: mano al mentón (pensando)
+    // El brazo derecho sube hasta el nivel del cuello,
+    // el izquierdo lo sostiene por debajo (codo apoyado)
+    PersonPose thinkPose = restPose;
+    thinkPose.bodyForwardLean = 0.5f;
+    thinkPose.bodySideLean = 2.0f;   // leve inclinación lateral pensativo
+    thinkPose.headYaw = -8.0f;   // mira ligeramente al stand
+    thinkPose.headPitch = 5.0f;   // cabeza un poco hacia abajo (reflexivo)
+    thinkPose.rightArmX = 90.0f;  // brazo derecho sube al cuello
+    thinkPose.rightArmY = -25.0f;
+    thinkPose.rightArmZ = -20.0f;
+    thinkPose.leftArmX = 80.0f;  // brazo izquierdo sostiene el codo
+    thinkPose.leftArmY = 30.0f;
+    thinkPose.leftArmZ = 15.0f;
+    thinkPose.rightLegX = -3.0f;   // peso en pierna derecha
+    thinkPose.leftLegX = 4.0f;
+
+    // ---- Tiempos del ciclo ----
+    const float REST_TIME = 0.8f;  // reposo inicial visible
+    const float ARM_UP_TIME = 1.2f;  // sube brazo para señalar
+    const float POINT_HOLD_TIME = 2.0f;  // mantiene señalando
+    const float ARM_DOWN_TIME = 1.0f;  // baja el brazo
+    const float CROSS_TIME = 1.2f;  // cruza brazos
+    const float BREATH_TIME = 2.0f;  // respira cruzado
+    const float HEAD_SHAKE_TIME = 2.2f;  // mueve cabeza
+    const float HEAD_CENTER_TIME = 0.7f;  // centra cabeza
+    const float THINK_UP_TIME = 1.0f;  // lleva mano al mentón
+    const float THINK_HOLD_TIME = 2.5f;  // mantiene pose pensando
+    const float THINK_DOWN_TIME = 1.0f;  // baja mano
+    const float UNCROSS_TIME = 1.1f;  // descruza
+    const float PAUSE_TIME = 1.0f;  // pausa final
+
+    const float CYCLE_TIME =
+        REST_TIME + ARM_UP_TIME + POINT_HOLD_TIME + ARM_DOWN_TIME +
         CROSS_TIME + BREATH_TIME + HEAD_SHAKE_TIME + HEAD_CENTER_TIME +
+        THINK_UP_TIME + THINK_HOLD_TIME + THINK_DOWN_TIME +
         UNCROSS_TIME + PAUSE_TIME;
 
     float t = fmodf(personAnimTime, CYCLE_TIME);
 
-    // 1) Reposo
+    // 1) Reposo inicial
     if (t < REST_TIME) {
-        ApplyPersonPose(restPose);
+        float wave = sinf((float)glfwGetTime() * 1.2f);
+        PersonPose pose = restPose;
+        pose.bodyBob = wave * 0.008f;  // respiración sutil en reposo
+        pose.bodySideLean = wave * 0.2f;
+        ApplyPersonPose(pose);
         return;
     }
     t -= REST_TIME;
 
-    // 2) Señala el stand
+    // 2) Sube el brazo para señalar
     if (t < ARM_UP_TIME) {
-        float p = t / ARM_UP_TIME;
-        ApplyPersonPose(LerpPose(restPose, pointPose, p));
+        ApplyPersonPose(LerpPose(restPose, pointPose, t / ARM_UP_TIME));
         return;
     }
     t -= ARM_UP_TIME;
 
-    // 3) Mantiene el brazo señalando
+    // 3) Mantiene señalando con micro-temblor orgánico
     if (t < POINT_HOLD_TIME) {
         PersonPose pose = pointPose;
-        pose.rightArmX += sinf((float)glfwGetTime() * 1.4f) * 1.5f;
-        pose.bodyForwardLean += sinf((float)glfwGetTime() * 1.0f) * 0.4f;
+        float osc = sinf((float)glfwGetTime() * 1.6f);
+        pose.rightArmX += osc * 1.8f;   // temblor leve del brazo
+        pose.bodyForwardLean += osc * 0.3f;   // peso leve
+        pose.headYaw += sinf((float)glfwGetTime() * 0.5f) * 1.5f; // cabeza levemente viva
         ApplyPersonPose(pose);
         return;
     }
@@ -331,29 +355,27 @@ void UpdatePersonAnimation() {
 
     // 4) Baja el brazo
     if (t < ARM_DOWN_TIME) {
-        float p = t / ARM_DOWN_TIME;
-        ApplyPersonPose(LerpPose(pointPose, restPose, p));
+        ApplyPersonPose(LerpPose(pointPose, restPose, t / ARM_DOWN_TIME));
         return;
     }
     t -= ARM_DOWN_TIME;
 
-    // 5) Cruza los brazos
+    // 5) Cruza brazos
     if (t < CROSS_TIME) {
-        float p = t / CROSS_TIME;
-        ApplyPersonPose(LerpPose(restPose, crossPose, p));
+        ApplyPersonPose(LerpPose(restPose, crossPose, t / CROSS_TIME));
         return;
     }
     t -= CROSS_TIME;
 
-    // 6) Respira y se balancea con brazos cruzados
+    // 6) Respira con brazos cruzados
     if (t < BREATH_TIME) {
         PersonPose pose = crossPose;
         float wave = sinf((float)glfwGetTime() * 2.2f);
-        pose.bodyBob = wave * 0.035f;
-        pose.bodySideLean = 1.5f + wave * 1.5f;
-        pose.headPitch = wave * 2.0f;
+        pose.bodyBob = wave * 0.03f;
+        pose.bodySideLean = 1.5f + wave * 1.2f;
+        pose.headPitch = wave * 1.8f;
         pose.rightLegX = -2.5f;
-        pose.leftLegX = 6.0f + wave * 3.0f;
+        pose.leftLegX = 5.0f + wave * 2.5f;
         ApplyPersonPose(pose);
         return;
     }
@@ -364,33 +386,61 @@ void UpdatePersonAnimation() {
         PersonPose pose = crossPose;
         float p = t / HEAD_SHAKE_TIME;
         float wave = sinf((float)glfwGetTime() * 2.2f);
-        pose.bodyBob = wave * 0.020f;
-        pose.bodySideLean = wave * 0.8f;
-        pose.headYaw = sinf(p * 6.2831853f * 1.5f) * 18.0f;
+        pose.bodyBob = wave * 0.018f;
+        pose.bodySideLean = wave * 0.7f;
+        pose.headYaw = sinf(p * 6.2831853f * 1.5f) * 16.0f;
         ApplyPersonPose(pose);
         return;
     }
     t -= HEAD_SHAKE_TIME;
 
-    // 8) Regresa la cabeza al centro
+    // 8) Centra la cabeza
     if (t < HEAD_CENTER_TIME) {
-        float p = t / HEAD_CENTER_TIME;
-        PersonPose headSidePose = crossPose;
-        headSidePose.headYaw = 18.0f;
-        ApplyPersonPose(LerpPose(headSidePose, crossPose, p));
+        PersonPose headSide = crossPose;
+        headSide.headYaw = 16.0f;
+        ApplyPersonPose(LerpPose(headSide, crossPose, t / HEAD_CENTER_TIME));
         return;
     }
     t -= HEAD_CENTER_TIME;
 
-    // 9) Descruza los brazos
+    // 9) Lleva mano al mentón (pensando)
+    if (t < THINK_UP_TIME) {
+        ApplyPersonPose(LerpPose(crossPose, thinkPose, t / THINK_UP_TIME));
+        return;
+    }
+    t -= THINK_UP_TIME;
+
+    // 10) Mantiene pose pensando con movimiento muy sutil de cabeza
+    if (t < THINK_HOLD_TIME) {
+        PersonPose pose = thinkPose;
+        float osc = sinf((float)glfwGetTime() * 0.8f);
+        // Cabeza se mueve levemente como si estuviera pensando
+        pose.headYaw += osc * 4.0f;
+        pose.headPitch += fabsf(sinf((float)glfwGetTime() * 0.4f)) * 2.0f;
+        // Leve balanceo del torso
+        pose.bodySideLean += sinf((float)glfwGetTime() * 1.1f) * 0.8f;
+        // Micro-movimiento del brazo en el mentón
+        pose.rightArmX += sinf((float)glfwGetTime() * 2.0f) * 1.5f;
+        ApplyPersonPose(pose);
+        return;
+    }
+    t -= THINK_HOLD_TIME;
+
+    // 11) Baja la mano del mentón de vuelta a reposo
+    if (t < THINK_DOWN_TIME) {
+        ApplyPersonPose(LerpPose(thinkPose, restPose, t / THINK_DOWN_TIME));
+        return;
+    }
+    t -= THINK_DOWN_TIME;
+
+    // 12) Descruza (ya viene de restPose así que es suave)
     if (t < UNCROSS_TIME) {
-        float p = t / UNCROSS_TIME;
-        ApplyPersonPose(LerpPose(crossPose, restPose, p));
+        ApplyPersonPose(LerpPose(restPose, restPose, t / UNCROSS_TIME));
         return;
     }
     t -= UNCROSS_TIME;
 
-    // 10) Pausa final antes de repetir
+    // 13) Pausa final antes de repetir
     ApplyPersonPose(restPose);
 }
 
@@ -412,59 +462,50 @@ std::vector<glm::vec3> sqPath = {
     glm::vec3(9.5f,  0.5f, -15.0f),
     glm::vec3(5.0f,  0.5f, -20.0f)
 };
-
 int currentWP = 0;
 float sqLerpT = 0.0f;
 glm::vec3 sqPos = sqPath[0];
 float sqYaw = 0.0f;
 float sqWalkAngle = 0.0f;
 
-// ---- Personaje animado (esqueleto) ----
 Shader* animShader = nullptr;
 ModelAnim* animacionPersonaje = nullptr;
 
 void UpdateSquirrel() {
-    float sqSpeed = 0.5f;
-    sqLerpT += sqSpeed * deltaTime;
-
-    int nextWP = currentWP + 1;
-    if (sqLerpT > 1.0f) {
-        sqLerpT = 0.0f;
-        currentWP++;
-        nextWP++;
-        if (currentWP >= (int)sqPath.size() - 1) {
-            currentWP = 0;
-            nextWP = 1;
+    if (sqMoving) {
+        float sqSpeed = 0.5f;
+        sqLerpT += sqSpeed * deltaTime;
+        int nextWP = currentWP + 1;
+        if (sqLerpT > 1.0f) {
+            sqLerpT = 0.0f;
+            currentWP++;
+            nextWP++;
+            if (currentWP >= (int)sqPath.size() - 1) {
+                currentWP = 0;
+                nextWP = 1;
+            }
         }
+        glm::vec3 pStart = sqPath[currentWP];
+        glm::vec3 pEnd = sqPath[nextWP];
+        sqPos = pStart + sqLerpT * (pEnd - pStart);
+        glm::vec3 sqDir = glm::normalize(pEnd - pStart);
+        sqYaw = glm::degrees(atan2f(sqDir.x, sqDir.z));
+        sqPos.y = 0.5f + fabsf(sinf((float)glfwGetTime() * 15.0f)) * 0.3f;
     }
-
-    glm::vec3 pStart = sqPath[currentWP];
-    glm::vec3 pEnd = sqPath[nextWP];
-
-    sqPos = pStart + sqLerpT * (pEnd - pStart);
-
-    glm::vec3 sqDir = glm::normalize(pEnd - pStart);
-    sqYaw = glm::degrees(atan2f(sqDir.x, sqDir.z));
-
-    sqPos.y = 0.5f + fabsf(sinf((float)glfwGetTime() * 15.0f)) * 0.3f;
     sqWalkAngle = sinf((float)glfwGetTime() * 15.0f) * 25.0f;
 }
 
-GLuint CargarTexturaDesdeCodigo(const char* ruta)
-{
+GLuint CargarTexturaDesdeCodigo(const char* ruta) {
     GLuint texturaID;
     glGenTextures(1, &texturaID);
-
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(ruta, &width, &height, &nrChannels, 0);
-    if (data)
-    {
+    if (data) {
         GLenum format = GL_RGB;
         if (nrChannels == 1) format = GL_RED;
         else if (nrChannels == 3) format = GL_RGB;
         else if (nrChannels == 4) format = GL_RGBA;
-
         glBindTexture(GL_TEXTURE_2D, texturaID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -473,8 +514,7 @@ GLuint CargarTexturaDesdeCodigo(const char* ruta)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
-    else
-    {
+    else {
         std::cout << "ERROR: No se pudo cargar la textura: " << ruta << std::endl;
     }
     stbi_image_free(data);
@@ -496,7 +536,6 @@ int main()
         glfwTerminate();
         return EXIT_FAILURE;
     }
-
     glfwMakeContextCurrent(window);
     glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
     glfwSetKeyCallback(window, KeyCallback);
@@ -534,7 +573,6 @@ int main()
 
     // ---- Pantalla dinámica ----
     Model Pantalla((char*)"Models/PantallaDinamica/pantalla.obj");
-
     const int NUM_TEXTURAS_OBJETO = 4;
     GLuint texturasObjeto[NUM_TEXTURAS_OBJETO];
     texturasObjeto[0] = CargarTexturaDesdeCodigo("Models/PantallaDinamica/Texturas/img/bienvenida.jpg");
@@ -581,7 +619,6 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     {
         int w, h, ch;
         stbi_set_flip_vertically_on_load(false);
@@ -592,7 +629,7 @@ int main()
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else {
-            printf("ERROR: No se encontro p3hero.png. Revisa la ruta.\n");
+            printf("ERROR: No se encontro p3hero.png.\n");
         }
         stbi_image_free(data);
     }
@@ -610,7 +647,6 @@ int main()
     birdFrames[2].wingAngle = -20.0f;
     BirdWingInterpolation();
 
-    // ---- Variables del personaje animado (esqueleto) ----
     glm::vec3 posPersona = glm::vec3(9.1f, 0.0f, -46.0f);
     float     anglePersona = 0.0f;
     int       estadoPersona = 0;
@@ -699,12 +735,11 @@ int main()
 
         // ---- Pantalla dinámica ----
         {
-            glm::mat4 modelObjeto = glm::mat4(1.0f);
-            modelObjeto = glm::translate(modelObjeto, glm::vec3(11.7f, 2.0f, 18.1f));
-            modelObjeto = glm::rotate(modelObjeto, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            modelObjeto = glm::scale(modelObjeto, glm::vec3(1.2f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelObjeto));
-
+            glm::mat4 m = glm::mat4(1.0f);
+            m = glm::translate(m, glm::vec3(11.7f, 2.0f, 18.1f));
+            m = glm::rotate(m, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            m = glm::scale(m, glm::vec3(1.2f));
+            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
             int texturaActual = ((int)((float)glfwGetTime() * 0.8f)) % NUM_TEXTURAS_OBJETO;
             glUniform1i(glGetUniformLocation(shader.Program, "usarTexturaForzada"), 1);
             glActiveTexture(GL_TEXTURE0);
@@ -715,101 +750,18 @@ int main()
         }
 
         // ---- Letreros ----
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.7f, 2.16f, 13.58f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            CartelesInfo.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.75f, 2.2f, 0.0f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            AulaMagna.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.75f, 3.3f, 13.5f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            PlacaFlecha.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.75f, 3.5f, 13.5f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            CartelAzul.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(10.78f, 2.8f, 9.7f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            UnionProf.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.7f, 2.35f, 6.9f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            UnionProfSA.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.7f, 2.35f, -4.5f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            ConsejoTecnico.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.7f, 2.35f, -11.0f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            SSA.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.7f, 2.35f, -17.0f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            DCSyH.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(11.75f, 2.5f, 0.0f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            PlacaFlecha.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(10.8f, 3.0f, -22.8f));
-            m = glm::scale(m, glm::vec3(1.5f));
-            m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            ZonaRiesgo.Draw(shader);
-        }
-        {
-            glm::mat4 m = glm::mat4(1.0f);
-            m = glm::translate(m, glm::vec3(10.8f, 1.0f, -18.0f));
-            m = glm::rotate(m, glm::radians(120.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            m = glm::scale(m, glm::vec3(2.0f));
-            glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m));
-            Lona.Draw(shader);
-        }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.7f, 2.16f, 13.58f)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); CartelesInfo.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.75f, 2.2f, 0.0f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); AulaMagna.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.75f, 3.3f, 13.5f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); PlacaFlecha.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.75f, 3.5f, 13.5f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); CartelAzul.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(10.78f, 2.8f, 9.7f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); UnionProf.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.7f, 2.35f, 6.9f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(-90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); UnionProfSA.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.7f, 2.35f, -4.5f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); ConsejoTecnico.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.7f, 2.35f, -11.0f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); SSA.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.7f, 2.35f, -17.0f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); DCSyH.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(11.75f, 2.5f, 0.0f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); PlacaFlecha.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(10.8f, 3.0f, -22.8f)); m = glm::scale(m, glm::vec3(1.5f)); m = glm::rotate(m, glm::radians(270.0f), glm::vec3(1, 0, 0)); m = glm::rotate(m, glm::radians(90.0f), glm::vec3(0, 0, 1)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); ZonaRiesgo.Draw(shader); }
+        { glm::mat4 m = glm::mat4(1.0f); m = glm::translate(m, glm::vec3(10.8f, 1.0f, -18.0f)); m = glm::rotate(m, glm::radians(120.0f), glm::vec3(0, 1, 0)); m = glm::scale(m, glm::vec3(2.0f)); glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(m)); Lona.Draw(shader); }
 
         // ============================================================
         // RENDERIZAR PÁJARO
@@ -824,29 +776,24 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(birdBase));
             birdBody->Draw(shader);
 
-            // Cabeza
-            glm::vec3 pivotHead = glm::vec3(1.651f, -0.286f, -0.345f);
-            float headYaw = sinf((float)glfwGetTime() * 0.8f) * 6.0f;
-            float headPitch = -wingRightAngle * 0.15f;
+            float headYaw = sinf((float)glfwGetTime() * 0.9f) * 7.0f;
+            float headPitch = -wingRightAngle * 0.18f;
             glm::mat4 headMat = birdBase;
-            headMat = glm::translate(headMat, pivotHead);
+            headMat = glm::translate(headMat, glm::vec3(1.651f, -0.286f, -0.345f));
             headMat = glm::rotate(headMat, glm::radians(headYaw), glm::vec3(0, 1, 0));
-            headMat = glm::rotate(headMat, glm::radians(headPitch), glm::vec3(0, 0, 1));
-            headMat = glm::translate(headMat, -pivotHead);
+            headMat = glm::rotate(headMat, glm::radians(headPitch), glm::vec3(1, 0, 0));
+            headMat = glm::translate(headMat, -glm::vec3(1.651f, -0.286f, -0.345f));
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(headMat));
             birdHead->Draw(shader);
 
-            // Cola
-            glm::vec3 pivotTail = glm::vec3(0.389f, -1.266f, -0.310f);
-            float tailPitch = wingRightAngle * 0.2f;
+            float tailPitch = wingRightAngle * 0.22f;
             glm::mat4 tailMat = birdBase;
-            tailMat = glm::translate(tailMat, pivotTail);
-            tailMat = glm::rotate(tailMat, glm::radians(tailPitch), glm::vec3(0, 0, 1));
-            tailMat = glm::translate(tailMat, -pivotTail);
+            tailMat = glm::translate(tailMat, glm::vec3(0.389f, -1.266f, -0.310f));
+            tailMat = glm::rotate(tailMat, glm::radians(tailPitch), glm::vec3(1, 0, 0));
+            tailMat = glm::translate(tailMat, -glm::vec3(0.389f, -1.266f, -0.310f));
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(tailMat));
             birdTail->Draw(shader);
 
-            // Ala Derecha
             glm::vec3 pivotR = glm::vec3(1.05f, -0.66f, 0.0f);
             glm::mat4 wingRRoot = birdBase;
             wingRRoot = glm::translate(wingRRoot, pivotR);
@@ -855,7 +802,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(wingRRoot));
             birdWingR->Draw(shader);
 
-            // Punta Ala Derecha
             glm::vec3 pivotRT = glm::vec3(1.05f, -0.66f, 0.44f);
             float tipFoldR = wingRightAngle * 0.7f - 10.0f;
             glm::mat4 wingRTip = wingRRoot;
@@ -865,7 +811,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(wingRTip));
             birdWingRT->Draw(shader);
 
-            // Ala Izquierda
             glm::vec3 pivotL = glm::vec3(1.15f, -0.66f, -0.33f);
             glm::mat4 wingLRoot = birdBase;
             wingLRoot = glm::translate(wingLRoot, pivotL);
@@ -874,7 +819,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(wingLRoot));
             birdWingL->Draw(shader);
 
-            // Punta Ala Izquierda
             glm::vec3 pivotLT = glm::vec3(1.15f, -0.66f, -0.65f);
             float tipFoldL = -wingRightAngle * 0.7f + 10.0f;
             glm::mat4 wingLTip = wingLRoot;
@@ -893,71 +837,65 @@ int main()
         {
             glm::mat4 personBase = glm::mat4(1.0f);
             personBase = glm::translate(personBase, personPos + glm::vec3(0.0f, personBodyBob, 0.0f));
-            personBase = glm::rotate(personBase, glm::radians(personYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-            personBase = glm::rotate(personBase, glm::radians(personBodyForwardLean), glm::vec3(1.0f, 0.0f, 0.0f));
-            personBase = glm::rotate(personBase, glm::radians(personBodySideLean), glm::vec3(0.0f, 0.0f, 1.0f));
+            personBase = glm::rotate(personBase, glm::radians(personYaw), glm::vec3(0, 1, 0));
+            personBase = glm::rotate(personBase, glm::radians(personBodyForwardLean), glm::vec3(1, 0, 0));
+            personBase = glm::rotate(personBase, glm::radians(personBodySideLean), glm::vec3(0, 0, 1));
             personBase = glm::scale(personBase, personScale);
 
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(personBase));
             personBody->Draw(shader);
 
-            // Cabeza
             glm::vec3 pivotHead = glm::vec3(0.02f, 1.56f, 0.06f);
             glm::mat4 headMat = personBase;
             headMat = glm::translate(headMat, pivotHead);
-            headMat = glm::rotate(headMat, glm::radians(personHeadYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-            headMat = glm::rotate(headMat, glm::radians(personHeadPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+            headMat = glm::rotate(headMat, glm::radians(personHeadYaw), glm::vec3(0, 1, 0));
+            headMat = glm::rotate(headMat, glm::radians(personHeadPitch), glm::vec3(1, 0, 0));
             headMat = glm::translate(headMat, -pivotHead);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(headMat));
             personHead->Draw(shader);
 
-            // Brazo derecho
             glm::vec3 pivotRightArm = glm::vec3(0.13f, 1.45f, 0.08f);
             glm::mat4 rightArmMat = personBase;
             rightArmMat = glm::translate(rightArmMat, pivotRightArm);
-            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmX), glm::vec3(1.0f, 0.0f, 0.0f));
-            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmY), glm::vec3(0.0f, 1.0f, 0.0f));
-            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmX), glm::vec3(1, 0, 0));
+            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmY), glm::vec3(0, 1, 0));
+            rightArmMat = glm::rotate(rightArmMat, glm::radians(personRightArmZ), glm::vec3(0, 0, 1));
             rightArmMat = glm::translate(rightArmMat, -pivotRightArm);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightArmMat));
             personRightArm->Draw(shader);
 
-            // Brazo izquierdo
             glm::vec3 pivotLeftArm = glm::vec3(-0.13f, 1.45f, 0.08f);
             glm::mat4 leftArmMat = personBase;
             leftArmMat = glm::translate(leftArmMat, pivotLeftArm);
-            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmX), glm::vec3(1.0f, 0.0f, 0.0f));
-            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmY), glm::vec3(0.0f, 1.0f, 0.0f));
-            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmX), glm::vec3(1, 0, 0));
+            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmY), glm::vec3(0, 1, 0));
+            leftArmMat = glm::rotate(leftArmMat, glm::radians(personLeftArmZ), glm::vec3(0, 0, 1));
             leftArmMat = glm::translate(leftArmMat, -pivotLeftArm);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftArmMat));
             personLeftArm->Draw(shader);
 
-            // Pierna derecha
             glm::vec3 pivotRightLeg = glm::vec3(0.08f, 0.92f, 0.03f);
             glm::mat4 rightLegMat = personBase;
             rightLegMat = glm::translate(rightLegMat, pivotRightLeg);
-            rightLegMat = glm::rotate(rightLegMat, glm::radians(personRightLegX), glm::vec3(1.0f, 0.0f, 0.0f));
+            rightLegMat = glm::rotate(rightLegMat, glm::radians(personRightLegX), glm::vec3(1, 0, 0));
             rightLegMat = glm::translate(rightLegMat, -pivotRightLeg);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(rightLegMat));
             personRightLeg->Draw(shader);
 
-            // Pierna izquierda
             glm::vec3 pivotLeftLeg = glm::vec3(-0.08f, 0.92f, 0.03f);
             glm::mat4 leftLegMat = personBase;
             leftLegMat = glm::translate(leftLegMat, pivotLeftLeg);
-            leftLegMat = glm::rotate(leftLegMat, glm::radians(personLeftLegX), glm::vec3(1.0f, 0.0f, 0.0f));
+            leftLegMat = glm::rotate(leftLegMat, glm::radians(personLeftLegX), glm::vec3(1, 0, 0));
             leftLegMat = glm::translate(leftLegMat, -pivotLeftLeg);
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(leftLegMat));
             personLeftLeg->Draw(shader);
 
-            // Articulaciones
             if (showPersonJoints && jointMarker) {
                 auto DrawJoint = [&](glm::vec3 pivot, float size) {
-                    glm::mat4 jointMat = personBase;
-                    jointMat = glm::translate(jointMat, pivot + glm::vec3(0.0f, 0.045f, 0.0f));
-                    jointMat = glm::scale(jointMat, glm::vec3(size));
-                    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(jointMat));
+                    glm::mat4 jm = personBase;
+                    jm = glm::translate(jm, pivot + glm::vec3(0.0f, 0.045f, 0.0f));
+                    jm = glm::scale(jm, glm::vec3(size));
+                    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(jm));
                     jointMarker->Draw(shader);
                     };
                 DrawJoint(pivotHead, 0.06f);
@@ -979,7 +917,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(sqBase));
             sqBody->Draw(shader);
 
-            // Cola
             glm::vec3 pivotCola = glm::vec3(0.2569f, -0.12934f, -0.21342f);
             float anguloCola = sinf((float)glfwGetTime() * 5.0f) * 15.0f;
             glm::mat4 colaMat = sqBase;
@@ -989,7 +926,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(colaMat));
             sqTail->Draw(shader);
 
-            // Mano 1
             glm::vec3 pivotMano1 = glm::vec3(0.2569f, -0.12934f, -0.21342f);
             glm::mat4 mano1Mat = sqBase;
             mano1Mat = glm::translate(mano1Mat, pivotMano1);
@@ -998,7 +934,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(mano1Mat));
             sqArm1->Draw(shader);
 
-            // Mano 2
             glm::vec3 pivotMano2 = glm::vec3(0.2569f, -0.12934f, 0.21342f);
             glm::mat4 mano2Mat = sqBase;
             mano2Mat = glm::translate(mano2Mat, pivotMano2);
@@ -1007,7 +942,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(mano2Mat));
             sqArm2->Draw(shader);
 
-            // Pata 1
             glm::vec3 pivotPata1 = glm::vec3(-0.34106f, -1.1076f, -0.61203f);
             glm::mat4 pata1Mat = sqBase;
             pata1Mat = glm::translate(pata1Mat, pivotPata1);
@@ -1016,7 +950,6 @@ int main()
             glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(pata1Mat));
             sqLeg1->Draw(shader);
 
-            // Pata 2
             glm::vec3 pivotPata2 = glm::vec3(0.70116f, -1.109f, -0.65543f);
             glm::mat4 pata2Mat = sqBase;
             pata2Mat = glm::translate(pata2Mat, pivotPata2);
@@ -1027,7 +960,7 @@ int main()
         }
 
         // ============================================================
-        // RENDERIZAR PERSONAS CON ESQUELETO (animShader)
+        // RENDERIZAR PERSONAS CON ESQUELETO
         // ============================================================
         animShader->Use();
         GLuint modelLoc = glGetUniformLocation(animShader->Program, "model");
@@ -1036,7 +969,6 @@ int main()
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
         glUniform3f(glGetUniformLocation(animShader->Program, "light.direction"), -0.3f, -1.0f, -0.3f);
         glUniform3f(glGetUniformLocation(animShader->Program, "light.ambient"), 0.5f, 0.5f, 0.5f);
         glUniform3f(glGetUniformLocation(animShader->Program, "light.diffuse"), 0.6f, 0.6f, 0.6f);
@@ -1051,18 +983,16 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texturaIxanik);
         glUniform1i(glGetUniformLocation(animShader->Program, "texturaForzada"), 1);
 
-        // Persona 1
         glm::mat4 modelAnim = glm::mat4(1.0f);
         modelAnim = glm::translate(modelAnim, posPersona);
-        modelAnim = glm::rotate(modelAnim, glm::radians(anglePersona), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelAnim = glm::rotate(modelAnim, glm::radians(anglePersona), glm::vec3(0, 1, 0));
         modelAnim = glm::scale(modelAnim, glm::vec3(0.013f));
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim));
         animacionPersonaje->Draw(*animShader);
 
-        // Persona 2 (clon)
         glm::mat4 modelAnim2 = glm::mat4(1.0f);
         modelAnim2 = glm::translate(modelAnim2, posPersona2);
-        modelAnim2 = glm::rotate(modelAnim2, glm::radians(anglePersona2), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelAnim2 = glm::rotate(modelAnim2, glm::radians(anglePersona2), glm::vec3(0, 1, 0));
         modelAnim2 = glm::scale(modelAnim2, glm::vec3(0.013f));
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim2));
         animacionPersonaje->Draw(*animShader);
@@ -1072,7 +1002,6 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    // ---- Liberar memoria ----
     for (Model* s : stands) delete s;
     stands.clear();
     delete birdBody; delete birdHead; delete birdWingR; delete birdWingRT;
@@ -1083,30 +1012,28 @@ int main()
     delete sqArm1; delete sqArm2; delete sqTail;
     delete animacionPersonaje;
     delete animShader;
-
     glfwTerminate();
     return 0;
 }
 
-// ============================================================
 void DoMovement()
 {
-    if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])    camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])  camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])  camera.ProcessKeyboard(LEFT, deltaTime);
-    if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (keys[GLFW_KEY_W]) camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (keys[GLFW_KEY_S]) camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (keys[GLFW_KEY_A]) camera.ProcessKeyboard(LEFT, deltaTime);
+    if (keys[GLFW_KEY_D]) camera.ProcessKeyboard(RIGHT, deltaTime);
 
     if (selectedStand >= 0) {
         Stand& s = standConfigs[selectedStand];
         float moveSpeed = 5.0f * deltaTime;
         float rotSpeed = 90.0f * deltaTime;
         float scaleSpeed = 1.0f * deltaTime;
-        if (keys[GLFW_KEY_RIGHT])     s.pos.x += moveSpeed;
-        if (keys[GLFW_KEY_LEFT])      s.pos.x -= moveSpeed;
-        if (keys[GLFW_KEY_UP])        s.pos.z -= moveSpeed;
-        if (keys[GLFW_KEY_DOWN])      s.pos.z += moveSpeed;
-        if (keys[GLFW_KEY_PAGE_UP])   s.pos.y += moveSpeed;
-        if (keys[GLFW_KEY_PAGE_DOWN]) s.pos.y -= moveSpeed;
+        if (keys[GLFW_KEY_I]) s.pos.z -= moveSpeed;
+        if (keys[GLFW_KEY_K]) s.pos.z += moveSpeed;
+        if (keys[GLFW_KEY_J]) s.pos.x -= moveSpeed;
+        if (keys[GLFW_KEY_L]) s.pos.x += moveSpeed;
+        if (keys[GLFW_KEY_U]) s.pos.y += moveSpeed;
+        if (keys[GLFW_KEY_O]) s.pos.y -= moveSpeed;
         if (keys[GLFW_KEY_Q]) s.rotY -= rotSpeed;
         if (keys[GLFW_KEY_E]) s.rotY += rotSpeed;
         if (keys[GLFW_KEY_Z]) s.scale -= glm::vec3(scaleSpeed);
@@ -1122,6 +1049,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         if (action == GLFW_PRESS)   keys[key] = true;
         else if (action == GLFW_RELEASE) keys[key] = false;
     }
+    if (key == GLFW_KEY_B && action == GLFW_PRESS) birdMoving = !birdMoving;
+    if (key == GLFW_KEY_N && action == GLFW_PRESS) sqMoving = !sqMoving;
     if (key == GLFW_KEY_1) selectedStand = 0;
     if (key == GLFW_KEY_2) selectedStand = 1;
     if (key == GLFW_KEY_3) selectedStand = 2;
@@ -1131,7 +1060,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     if (key == GLFW_KEY_7) selectedStand = 6;
     if (key == GLFW_KEY_8) selectedStand = 7;
     if (key == GLFW_KEY_0) selectedStand = -1;
-    if (key == GLFW_KEY_H && selectedStand >= 0)
+    if (key == GLFW_KEY_H && selectedStand >= 0 && action == GLFW_PRESS)
         standConfigs[selectedStand].visible = !standConfigs[selectedStand].visible;
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
         personVisible = !personVisible;
