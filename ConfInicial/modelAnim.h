@@ -81,6 +81,21 @@ public:
 			meshes[i].Draw(shader);
 	}
 
+	void DrawTick(Shader shader, double tickActual)
+	{
+		// Calculo de las animaciones usando un tick específico
+		vector<aiMatrix4x4> transforms;
+		boneTransformTick(tickActual, transforms);
+
+		for (uint i = 0; i < transforms.size(); i++) // move all matrices for actual model position to shader
+		{
+			glUniformMatrix4fv(m_bone_location[i], 1, GL_TRUE, (const GLfloat*)&transforms[i]);
+		}
+
+		for (unsigned int i = 0; i < meshes.size(); i++)
+			meshes[i].Draw(shader);
+	}
+
 private:
 
 	/*  Functions   */
@@ -298,30 +313,63 @@ private:
 		{
 			aiString str;
 			mat->GetTexture(type, i, &str);
-			// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+
+			// Limpiar la ruta del FBX y dejar solo el nombre del archivo
+			string filename = string(str.C_Str());
+			filename = filename.substr(filename.find_last_of("/\\") + 1);
+
 			bool skip = false;
 			for (unsigned int j = 0; j < textures_loaded.size(); j++)
 			{
-				if (std::strcmp(textures_loaded[j].path.data, str.C_Str()) == 0)
+				if (std::strcmp(textures_loaded[j].path.data, filename.c_str()) == 0)
 				{
 					textures.push_back(textures_loaded[j]);
-					skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+					skip = true;
 					break;
 				}
 			}
 			if (!skip)
-			{   // if texture hasn't been loaded already, load it
+			{
 				Texture texture;
-				texture.id = TextureFromFile(str.C_Str(), this->directory);
+				texture.id = TextureFromFile(filename.c_str(), this->directory);
 				texture.type = typeName;
-				texture.path = str.C_Str();
+				texture.path = filename.c_str();
 				textures.push_back(texture);
-				textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+				textures_loaded.push_back(texture);
 			}
 		}
+
+		// ===================================================================
+		// SISTEMA DE RESCATE PARA PERSONA 3 (Mixamo FBX sin texturas enlazadas)
+		// ===================================================================
+		// Si es la persona3, estamos buscando el Diffuse, y el FBX vino vacío:
+		if (textures.size() == 0 && type == aiTextureType_DIFFUSE && this->directory.find("persona3") != string::npos)
+		{
+			// Leemos el nombre del material directamente del hueso/malla
+			aiString matName;
+			mat->Get(AI_MATKEY_NAME, matName);
+			string nameMat = matName.C_Str();
+
+			// Por defecto asumimos que es el cuerpo (Ropa)
+			string filename = "Ch07_1001_Diffuse.png";
+
+			// Si el material menciona 1002, Head, Face, etc., sabemos que es la cara/piel
+			if (nameMat.find("1002") != string::npos || nameMat.find("Head") != string::npos ||
+				nameMat.find("head") != string::npos || nameMat.find("Face") != string::npos) {
+				filename = "Ch07_1002_Diffuse.png";
+			}
+
+			// Inyectamos la textura manualmente salvando el día
+			Texture texture;
+			texture.id = TextureFromFile(filename.c_str(), this->directory);
+			texture.type = typeName;
+			texture.path = filename.c_str();
+			textures.push_back(texture);
+			textures_loaded.push_back(texture);
+		}
+
 		return textures;
 	}
-
 	uint findPosition(float p_animation_time, const aiNodeAnim* p_node_anim)
 	{
 		//                                                                              
@@ -518,6 +566,21 @@ private:
 		double time_in_ticks = time_in_sec * ticks_per_second;
 		float animation_time = fmod(time_in_ticks, scene->mAnimations[0]->mDuration); //                 (                 )
 		// animation_time -                                                      (                                     )
+
+		readNodeHierarchy(animation_time, scene->mRootNode, identity_matrix);
+
+		transforms.resize(m_num_bones);
+
+		for (uint i = 0; i < m_num_bones; i++)
+		{
+			transforms[i] = m_bone_matrices[i].final_world_transform;
+		}
+	}
+
+	void boneTransformTick(double time_in_ticks, vector<aiMatrix4x4>& transforms)
+	{
+		aiMatrix4x4 identity_matrix;
+		float animation_time = fmod(time_in_ticks, scene->mAnimations[0]->mDuration);
 
 		readNodeHierarchy(animation_time, scene->mRootNode, identity_matrix);
 

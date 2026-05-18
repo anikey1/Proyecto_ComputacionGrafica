@@ -495,12 +495,16 @@ void UpdateSquirrel() {
     sqWalkAngle = sinf((float)glfwGetTime() * 15.0f) * 25.0f;
 }
 
-GLuint CargarTexturaDesdeCodigo(const char* ruta) {
+
+GLuint CargarTexturaDesdeCodigo(const char* ruta, bool flip = true) {
     GLuint texturaID;
     glGenTextures(1, &texturaID);
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+
+    // Aquí usamos la variable "flip"
+    stbi_set_flip_vertically_on_load(flip);
     unsigned char* data = stbi_load(ruta, &width, &height, &nrChannels, 0);
+
     if (data) {
         GLenum format = GL_RGB;
         if (nrChannels == 1) format = GL_RED;
@@ -611,6 +615,36 @@ int main()
     animacionPersonaje = new ModelAnim("Models/persona1/persona1.fbx");
     animacionPersonaje->initShaders(animShader->Program);
 
+    // ---- Animación Persona 3 (Caminar, Pensar, Hablar) ----
+    ModelAnim* animacionPersona3 = new ModelAnim("Models/persona3/persona3a.fbx");
+    animacionPersona3->initShaders(animShader->Program);
+
+    // ==========================================================
+    // REPARACIÓN DEFINITIVA DE TEXTURAS PERSONA 3 (INYECCIÓN DIRECTA)
+    // ==========================================================
+    // 1. Cargamos con 'flip' en FALSE para que la ropa encaje perfectamente en el cuerpo
+    GLuint texP3Body = CargarTexturaDesdeCodigo("Models/persona3/Ch07_1001_Diffuse.png", false);
+    GLuint texP3Head = CargarTexturaDesdeCodigo("Models/persona3/Ch07_1002_Diffuse.png", false);
+
+    // 2. Le inyectamos a la fuerza las texturas a los vectores de las mallas (Saltándonos Assimp)
+    if (animacionPersona3->meshes.size() > 0) {
+        animacionPersona3->meshes[0].textures.clear();
+        Texture tBody; tBody.id = texP3Body; tBody.type = "texture_diffuse"; tBody.path = "body";
+        animacionPersona3->meshes[0].textures.push_back(tBody);
+    }
+    if (animacionPersona3->meshes.size() > 1) {
+        animacionPersona3->meshes[1].textures.clear();
+        Texture tHead; tHead.id = texP3Head; tHead.type = "texture_diffuse"; tHead.path = "head";
+        animacionPersona3->meshes[1].textures.push_back(tHead);
+    }
+    // Si el FBX trajera más sub-mallas ocultas (ojos, pestañas), les ponemos la de la cabeza
+    for (int m = 2; m < animacionPersona3->meshes.size(); m++) {
+        animacionPersona3->meshes[m].textures.clear();
+        Texture tExtra; tExtra.id = texP3Head; tExtra.type = "texture_diffuse"; tExtra.path = "extra";
+        animacionPersona3->meshes[m].textures.push_back(tExtra);
+    }
+    // ==========================================================
+
     // ---- Textura Ixanik ----
     unsigned int texturaIxanik;
     glGenTextures(1, &texturaIxanik);
@@ -655,6 +689,12 @@ int main()
     float     anglePersona2 = 180.0f;
     int       estadoPersona2 = 2;
 
+    // ---- Variables de estado para Persona 3 ----
+    // Subimos la Y a 0.15f para sacar los pies del piso
+    glm::vec3 p3Pos = glm::vec3(10.5f, 0.20f, 21.0f);
+    float     p3Angle = 180.0f;
+    int       p3Direccion = -1; // -1 va hacia el fondo (-11), 1 regresa (21)
+
     lastFrame = (GLfloat)glfwGetTime();
 
     // ============================================================
@@ -668,6 +708,8 @@ int main()
 
         glfwPollEvents();
         DoMovement();
+
+        printf("Clon Z: %.2f \n", posPersona2.z);
 
         UpdateBird();
         UpdatePersonAnimation();
@@ -697,6 +739,106 @@ int main()
             anglePersona2 = 180.0f;
             if (posPersona2.z <= -46.0f) { posPersona2.z = -46.0f; estadoPersona2 = 0; }
         }
+
+        // ---- Lógica recorrido Persona 3 (Ruta Fija X=7, Paradas, Bucle y Animaciones) ----
+
+       // 1. VARIABLES DE ESTADO Y MOVIMIENTO
+        static float zP3 = 21.0f;
+        static float anguloActual = 180.0f;
+        static int estadoPersona3 = 2; // 2=Ida, 0=Regreso, 3=Interactuando
+        static int paradasHechas = 0;
+        static float temporizador = 0.0f;
+
+        static int estadoGiro = 0; // 0 = recto, 1 = girando
+        static float anguloDestino = 180.0f;
+        static float dirGiro = 1.0f; // 1.0 = giro a la izquierda, -1.0 = giro a la derecha
+        static int siguienteEstado = 0;
+
+        // ¡NUEVO! Acumulador de frames para evitar los saltos bruscos
+        static float frameAnimacion = 0.0f;
+
+        float velocidadP3 = 3.5f * deltaTime;
+        float velGiro = 150.0f * deltaTime; // 150 grados por segundo
+
+        // 2. LÓGICA DE MÁQUINA DE ESTADOS (Giros y Paradas)
+        if (estadoGiro == 1) {
+            anguloActual += dirGiro * velGiro;
+
+            float diff = anguloDestino - anguloActual;
+            while (diff > 180.0f) diff -= 360.0f;
+            while (diff < -180.0f) diff += 360.0f;
+
+            if (fabs(diff) <= velGiro) {
+                anguloActual = anguloDestino;
+                estadoGiro = 0;
+                estadoPersona3 = siguienteEstado;
+            }
+        }
+        else {
+            if (estadoPersona3 == 2) { // Ida hacia el fondo (-Z)
+                zP3 -= velocidadP3;
+
+                if (paradasHechas == 0 && zP3 <= 13.5f) {
+                    zP3 = 13.5f; paradasHechas = 1;
+                    estadoGiro = 1; anguloDestino = 270.0f; dirGiro = 1.0f; siguienteEstado = 3;
+                }
+                else if (paradasHechas == 1 && zP3 <= 2.8f) {
+                    zP3 = 2.8f; paradasHechas = 2;
+                    estadoGiro = 1; anguloDestino = 270.0f; dirGiro = 1.0f; siguienteEstado = 3;
+                }
+                else if (zP3 <= -16.0f) {
+                    zP3 = -16.0f;
+                    estadoGiro = 1; anguloDestino = 0.0f; dirGiro = -1.0f; siguienteEstado = 0;
+                }
+            }
+            else if (estadoPersona3 == 3) { // Interactuando con puesto
+                temporizador += deltaTime;
+                if (temporizador > 4.0f) {
+                    temporizador = 0.0f;
+                    estadoGiro = 1; anguloDestino = 180.0f; dirGiro = -1.0f; siguienteEstado = 2;
+                }
+            }
+            else if (estadoPersona3 == 0) { // Regreso hacia el inicio (+Z)
+                zP3 += velocidadP3;
+                if (zP3 >= 20.5f) {
+                    zP3 = 20.5f; paradasHechas = 0;
+                    estadoGiro = 1; anguloDestino = 180.0f; dirGiro = -1.0f; siguienteEstado = 2;
+                }
+            }
+        }
+
+        // 3. POSICIÓN DINÁMICA (X) PARA EVITAR SALTO DE RIEL (Tu solución trigonométrica)
+        float xP3 = 8.75f - 1.75f * cos(glm::radians(anguloActual));
+
+        // Asegurar que el ángulo se mantenga en 0-360
+        if (anguloActual >= 360.0f) anguloActual -= 360.0f;
+        if (anguloActual < 0.0f) anguloActual += 360.0f;
+
+        // 4. ANIMACIÓN CONSTANTE SIN SALTOS DE TIEMPO
+        float tps = animacionPersona3->ticks_per_second;
+        if (tps == 0.0f) tps = 24.0f;
+
+        // Evaluamos qué animación toca reproducir
+        if (estadoPersona3 == 3 && estadoGiro == 0) {
+            // Animación Pensar/Hablar (Frames 100 a 240)
+            frameAnimacion += tps * deltaTime;
+            if (frameAnimacion < 100.0f || frameAnimacion > 240.0f) {
+                frameAnimacion = 100.0f;
+            }
+        }
+        else {
+            // Animación Caminar (Frames 0 a 92)
+            frameAnimacion += tps * deltaTime;
+            if (frameAnimacion < 0.0f || frameAnimacion > 92.0f) {
+                frameAnimacion = 0.0f;
+            }
+        }
+
+        // 5. APLICAR POSICIÓN Y ÁNGULO FINAL
+        p3Pos.x = xP3;
+        p3Pos.y = 0.27f;
+        p3Pos.z = zP3;
+        p3Angle = anguloActual;
 
         glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -997,10 +1139,22 @@ int main()
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim2));
         animacionPersonaje->Draw(*animShader);
 
+
+        // ---- Dibujar Persona 3 ----
+        glm::mat4 modelAnim3 = glm::mat4(1.0f);
+        modelAnim3 = glm::translate(modelAnim3, p3Pos);
+        modelAnim3 = glm::rotate(modelAnim3, glm::radians(p3Angle), glm::vec3(0, 1, 0));
+        modelAnim3 = glm::scale(modelAnim3, glm::vec3(0.013f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAnim3));
+
+        // APAGADO: Ahora el modelo usará los PNGs que le inyectamos arriba
         glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 0);
+
+        animacionPersona3->DrawTick(*animShader, frameAnimacion);
 
         glfwSwapBuffers(window);
     }
+
 
     for (Model* s : stands) delete s;
     stands.clear();
@@ -1011,6 +1165,7 @@ int main()
     delete sqBody; delete sqLeg1; delete sqLeg2;
     delete sqArm1; delete sqArm2; delete sqTail;
     delete animacionPersonaje;
+    delete animacionPersona3;
     delete animShader;
     glfwTerminate();
     return 0;
