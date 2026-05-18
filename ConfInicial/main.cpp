@@ -371,11 +371,14 @@ void UpdatePersonAnimation() {
     if (t < BREATH_TIME) {
         PersonPose pose = crossPose;
         float wave = sinf((float)glfwGetTime() * 2.2f);
-        pose.bodyBob = wave * 0.03f;
-        pose.bodySideLean = 1.5f + wave * 1.2f;
-        pose.headPitch = wave * 1.8f;
+
+        pose.bodyBob = wave * 0.035f;
+        pose.bodySideLean = 1.5f + wave * 1.5f;
+        pose.headPitch = wave * 2.0f;
+
         pose.rightLegX = -2.5f;
-        pose.leftLegX = 5.0f + wave * 2.5f;
+        pose.leftLegX = 6.0f + wave * 3.0f;
+
         ApplyPersonPose(pose);
         return;
     }
@@ -386,9 +389,11 @@ void UpdatePersonAnimation() {
         PersonPose pose = crossPose;
         float p = t / HEAD_SHAKE_TIME;
         float wave = sinf((float)glfwGetTime() * 2.2f);
-        pose.bodyBob = wave * 0.018f;
-        pose.bodySideLean = wave * 0.7f;
-        pose.headYaw = sinf(p * 6.2831853f * 1.5f) * 16.0f;
+
+        pose.bodyBob = wave * 0.020f;
+        pose.bodySideLean = wave * 0.8f;
+        pose.headYaw = sinf(p * 6.2831853f * 1.5f) * 18.0f;
+
         ApplyPersonPose(pose);
         return;
     }
@@ -397,7 +402,7 @@ void UpdatePersonAnimation() {
     // 8) Centra la cabeza
     if (t < HEAD_CENTER_TIME) {
         PersonPose headSide = crossPose;
-        headSide.headYaw = 16.0f;
+        headSide.headYaw = 18.0f;
         ApplyPersonPose(LerpPose(headSide, crossPose, t / HEAD_CENTER_TIME));
         return;
     }
@@ -414,13 +419,12 @@ void UpdatePersonAnimation() {
     if (t < THINK_HOLD_TIME) {
         PersonPose pose = thinkPose;
         float osc = sinf((float)glfwGetTime() * 0.8f);
-        // Cabeza se mueve levemente como si estuviera pensando
+
         pose.headYaw += osc * 4.0f;
         pose.headPitch += fabsf(sinf((float)glfwGetTime() * 0.4f)) * 2.0f;
-        // Leve balanceo del torso
         pose.bodySideLean += sinf((float)glfwGetTime() * 1.1f) * 0.8f;
-        // Micro-movimiento del brazo en el mentón
         pose.rightArmX += sinf((float)glfwGetTime() * 2.0f) * 1.5f;
+
         ApplyPersonPose(pose);
         return;
     }
@@ -433,7 +437,7 @@ void UpdatePersonAnimation() {
     }
     t -= THINK_DOWN_TIME;
 
-    // 12) Descruza (ya viene de restPose así que es suave)
+    // 12) Descruza
     if (t < UNCROSS_TIME) {
         ApplyPersonPose(LerpPose(restPose, restPose, t / UNCROSS_TIME));
         return;
@@ -443,6 +447,7 @@ void UpdatePersonAnimation() {
     // 13) Pausa final antes de repetir
     ApplyPersonPose(restPose);
 }
+
 
 // ============================================================
 // ARDILLA
