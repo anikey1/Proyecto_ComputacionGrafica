@@ -74,7 +74,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-#*.obj
+*.obj
 *.iobj
 *.pch
 *.pdb
@@ -399,3 +399,20 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# --- Permitir subir GLEW vendorizado ---
+!External Libraries/
+!External Libraries/GLEW/
+!External Libraries/GLEW/include/**
+!External Libraries/GLEW/lib/**
+!External Libraries/GLEW/bin/**
+!External Libraries/GLEW/doc/**
+!External Libraries/GLEW/lib/*.lib
+!External Libraries/GLEW/bin/*.dll
+
+# --- Permitir subir modelos 3D y texturas ---
+!*.obj
+!*.mtl
+!*.png
+!*.jpeg
+!*.jpg
