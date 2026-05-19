@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="meshAnim.h" />
+    <ClInclude Include="miniaudio.h" />
     <ClInclude Include="modelAnim.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>

@@ -21,6 +21,8 @@
 #include "Model.h"
 #include "modelAnim.h"
 #include "meshAnim.h"
+#define MINIAUDIO_IMPLEMENTATION
+#include "miniaudio.h"
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -36,6 +38,15 @@ GLfloat lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+// AUDIO DE FONDO
+ma_engine motorAudio;
+ma_sound musicaFondo;
+bool audioIniciado = false;
+bool musicaCargada = false;
+bool musicaPausada = false;
+bool musicaYaInicio = false;
+float volumenMusica = 0.35f;
 
 struct Stand {
     std::string path;
@@ -561,6 +572,31 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // INICIALIZAR AUDIO
+    if (ma_engine_init(NULL, &motorAudio) != MA_SUCCESS) {
+        std::cout << "ERROR: No se pudo inicializar el motor de audio." << std::endl;
+    }
+    else {
+        audioIniciado = true;
+
+        if (ma_sound_init_from_file(
+            &motorAudio,
+            "Audio/ambiental.mp3",
+            MA_SOUND_FLAG_STREAM,
+            NULL,
+            NULL,
+            &musicaFondo
+        ) != MA_SUCCESS) {
+            std::cout << "ERROR: No se pudo cargar la musica de fondo." << std::endl;
+        }
+        else {
+            musicaCargada = true;
+            ma_sound_set_looping(&musicaFondo, MA_TRUE);
+            ma_sound_set_volume(&musicaFondo, volumenMusica);
+            std::cout << "Musica de fondo cargada correctamente." << std::endl;
+        }
+    }
 
     Shader shader("Shader/modelLoading.vs", "Shader/modelLoading.frag");
 
@@ -1156,8 +1192,15 @@ int main()
         glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 0);
 
         animacionPersona3->DrawTick(*animShader, frameAnimacion);
-
         glfwSwapBuffers(window);
+
+        // Iniciar la musica despues de mostrar el primer frame de la escena
+        if (!musicaYaInicio && musicaCargada) {
+            ma_sound_start(&musicaFondo);
+            musicaYaInicio = true;
+            musicaPausada = false;
+            std::cout << "Musica iniciada despues de mostrar la escena." << std::endl;
+        }
     }
 
 
@@ -1172,6 +1215,14 @@ int main()
     delete animacionPersonaje;
     delete animacionPersona3;
     delete animShader;
+
+    // LIBERAR AUDIO
+    if (musicaCargada) {
+        ma_sound_uninit(&musicaFondo);
+    }
+    if (audioIniciado) {
+        ma_engine_uninit(&motorAudio);
+    }
     glfwTerminate();
     return 0;
 }
@@ -1224,6 +1275,37 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         standConfigs[selectedStand].visible = !standConfigs[selectedStand].visible;
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
         personVisible = !personVisible;
+    // Pausar / reanudar musica con M
+    if (key == GLFW_KEY_M && action == GLFW_PRESS && musicaCargada) {
+        musicaPausada = !musicaPausada;
+        if (musicaPausada) {
+            ma_sound_stop(&musicaFondo);
+            std::cout << "Musica pausada." << std::endl;
+        }
+        else {
+            ma_sound_start(&musicaFondo);
+            std::cout << "Musica reanudada." << std::endl;
+        }
+    }
+    // Subir volumen con flecha arriba
+    if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT) && musicaCargada) {
+        volumenMusica += 0.05f;
+        if (volumenMusica > 1.0f) {
+            volumenMusica = 1.0f;
+        }
+        ma_sound_set_volume(&musicaFondo, volumenMusica);
+        std::cout << "Volumen musica: " << volumenMusica << std::endl;
+    }
+    // Bajar volumen con flecha abajo
+    if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT) && musicaCargada) {
+        volumenMusica -= 0.05f;
+
+        if (volumenMusica < 0.0f) {
+            volumenMusica = 0.0f;
+        }
+        ma_sound_set_volume(&musicaFondo, volumenMusica);
+        std::cout << "Volumen musica: " << volumenMusica << std::endl;
+    }
 }
 
 void MouseCallback(GLFWwindow* window, double xPos, double yPos)
