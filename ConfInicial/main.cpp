@@ -4,7 +4,7 @@
 // 320260366
 // 320110450
 
-//Entrega: 13 de mayo, 2025
+//Entrega: 20 de mayo, 2025
 #include <GL/glew.h>
 #include <iostream>
 #include <cmath>
@@ -47,6 +47,53 @@ bool musicaCargada = false;
 bool musicaPausada = false;
 bool musicaYaInicio = false;
 float volumenMusica = 0.35f;
+// SKYBOX
+int skyboxActual = 0;
+// Cubo usado para dibujar el skybox alrededor de toda la escena
+GLfloat skyboxVertices[] = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
 
 struct Stand {
     std::string path;
@@ -541,6 +588,66 @@ GLuint CargarTexturaDesdeCodigo(const char* ruta, bool flip = true) {
     return texturaID;
 }
 
+// CARGAR CUBEMAP PARA SKYBOX
+GLuint CargarCubemap(std::vector<std::string> caras)
+{
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+
+    // Para cubemaps normalmente no se voltea la imagen
+    stbi_set_flip_vertically_on_load(false);
+
+    for (unsigned int i = 0; i < caras.size(); i++)
+    {
+        unsigned char* data = stbi_load(caras[i].c_str(), &width, &height, &nrChannels, 0);
+
+        if (data)
+        {
+            GLenum format = GL_RGB;
+
+            if (nrChannels == 1)
+                format = GL_RED;
+            else if (nrChannels == 3)
+                format = GL_RGB;
+            else if (nrChannels == 4)
+                format = GL_RGBA;
+
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0,
+                format,
+                width,
+                height,
+                0,
+                format,
+                GL_UNSIGNED_BYTE,
+                data
+            );
+
+            std::cout << "Skybox cargado: " << caras[i] << std::endl;
+        }
+        else
+        {
+            std::cout << "ERROR: No se pudo cargar la textura del skybox: "
+                << caras[i] << std::endl;
+        }
+
+        stbi_image_free(data);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
 int main()
 {
     glfwInit();
@@ -599,6 +706,68 @@ int main()
     }
 
     Shader shader("Shader/modelLoading.vs", "Shader/modelLoading.frag");
+
+    // INICIALIZACION DEL SKYBOX
+    Shader skyboxShader("Shader/SkyBox.vs", "Shader/SkyBox.frag");
+
+    GLuint skyboxVAO, skyboxVBO;
+
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        3 * sizeof(GLfloat),
+        (GLvoid*)0
+    );
+
+    glBindVertexArray(0);
+
+	// Cargar las texturas del cubemap para el skybox
+    GLuint cubemapDia = CargarCubemap({
+        "Skybox/dia/right.jpg",
+        "Skybox/dia/left.jpg",
+        "Skybox/dia/top.jpg",
+        "Skybox/dia/bottom.jpg",
+        "Skybox/dia/back.jpg",
+        "Skybox/dia/front.jpg"
+        });
+
+    GLuint cubemapAtardecer = CargarCubemap({
+        "Skybox/atardecer/right.jpg",
+        "Skybox/atardecer/left.jpg",
+        "Skybox/atardecer/top.jpg",
+        "Skybox/atardecer/bottom.jpg",
+        "Skybox/atardecer/back.jpg",
+        "Skybox/atardecer/front.jpg"
+        });
+
+    GLuint cubemapNoche = CargarCubemap({
+        "Skybox/noche/right.jpg",
+        "Skybox/noche/left.jpg",
+        "Skybox/noche/top.jpg",
+        "Skybox/noche/bottom.jpg",
+        "Skybox/noche/back.jpg",
+        "Skybox/noche/front.jpg"
+        });
+
+    GLuint cubemapsSkybox[3] = {
+        cubemapDia,
+        cubemapAtardecer,
+        cubemapNoche
+    };
+
+    skyboxShader.Use();
+    glUniform1i(glGetUniformLocation(skyboxShader.Program, "skybox"), 0);
+
 
     for (int i = 0; i < (int)standConfigs.size(); i++)
         stands.push_back(new Model((char*)standConfigs[i].path.c_str()));
@@ -881,20 +1050,54 @@ int main()
         p3Pos.z = zP3;
         p3Angle = anguloActual;
 
-        glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
+		// Fondos, luces y uniformes comunes, con cambio dinámico según el skybox actual
+        glm::vec3 colorFondo;
+        glm::vec3 lightDir;
+        glm::vec3 lightAmbient;
+        glm::vec3 lightDiffuse;
+        glm::vec3 lightSpecular;
+        glm::vec3 fillLightColor;
+
+        if (skyboxActual == 0) {
+            // Dia
+            colorFondo = glm::vec3(0.53f, 0.81f, 0.92f);
+            lightDir = glm::vec3(-0.3f, -1.0f, -0.3f);
+            lightAmbient = glm::vec3(0.48f, 0.48f, 0.48f);
+            lightDiffuse = glm::vec3(0.58f, 0.58f, 0.55f);
+            lightSpecular = glm::vec3(0.18f, 0.18f, 0.18f);
+            fillLightColor = glm::vec3(0.24f, 0.24f, 0.26f);
+        }
+        else if (skyboxActual == 1) {
+            // Atardecer: luz cálida, pero no tan oscura
+            colorFondo = glm::vec3(0.95f, 0.45f, 0.12f);
+            lightDir = glm::vec3(-0.7f, -0.55f, -0.25f);
+            lightAmbient = glm::vec3(0.62f, 0.42f, 0.26f);
+            lightDiffuse = glm::vec3(0.95f, 0.58f, 0.28f);
+            lightSpecular = glm::vec3(0.32f, 0.20f, 0.12f);
+            fillLightColor = glm::vec3(0.55f, 0.34f, 0.20f);
+        }
+        else {
+            // Noche: luz fría tipo luna + iluminación interior
+            colorFondo = glm::vec3(0.02f, 0.03f, 0.08f);
+            lightDir = glm::vec3(0.2f, -0.8f, 0.1f);
+            lightAmbient = glm::vec3(0.30f, 0.34f, 0.48f);
+            lightDiffuse = glm::vec3(0.38f, 0.45f, 0.70f);
+            lightSpecular = glm::vec3(0.18f, 0.22f, 0.35f);
+            fillLightColor = glm::vec3(0.28f, 0.34f, 0.60f);
+        }
+
+        glClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.Use();
         glUniform1i(glGetUniformLocation(shader.Program, "usarTexturaForzada"), 0);
-
         glm::vec3 camPos = camera.GetPosition();
-        glUniform3f(glGetUniformLocation(shader.Program, "viewPos"), camPos.x, camPos.y, camPos.z);
-        glUniform3f(glGetUniformLocation(shader.Program, "lightDir"), -0.3f, -1.0f, -0.3f);
-        glUniform3f(glGetUniformLocation(shader.Program, "lightAmbient"), 0.55f, 0.55f, 0.55f);
-        glUniform3f(glGetUniformLocation(shader.Program, "lightDiffuse"), 0.6f, 0.6f, 0.6f);
-        glUniform3f(glGetUniformLocation(shader.Program, "lightSpecular"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(glGetUniformLocation(shader.Program, "lightDir"), lightDir.x, lightDir.y, lightDir.z);
+        glUniform3f(glGetUniformLocation(shader.Program, "lightAmbient"), lightAmbient.r, lightAmbient.g, lightAmbient.b);
+        glUniform3f(glGetUniformLocation(shader.Program, "lightDiffuse"), lightDiffuse.r, lightDiffuse.g, lightDiffuse.b);
+        glUniform3f(glGetUniformLocation(shader.Program, "lightSpecular"), lightSpecular.r, lightSpecular.g, lightSpecular.b);
         glUniform3f(glGetUniformLocation(shader.Program, "fillLightDir"), 0.3f, 0.5f, 0.3f);
-        glUniform3f(glGetUniformLocation(shader.Program, "fillLightColor"), 0.25f, 0.25f, 0.28f);
+        glUniform3f(glGetUniformLocation(shader.Program, "fillLightColor"), fillLightColor.r, fillLightColor.g, fillLightColor.b);
 
         glm::mat4 view = camera.GetViewMatrix();
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -1152,14 +1355,16 @@ int main()
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniform3f(glGetUniformLocation(animShader->Program, "light.direction"), -0.3f, -1.0f, -0.3f);
-        glUniform3f(glGetUniformLocation(animShader->Program, "light.ambient"), 0.5f, 0.5f, 0.5f);
-        glUniform3f(glGetUniformLocation(animShader->Program, "light.diffuse"), 0.6f, 0.6f, 0.6f);
-        glUniform3f(glGetUniformLocation(animShader->Program, "light.specular"), 0.3f, 0.3f, 0.3f);
+        glm::vec3 animAmbient = lightAmbient * 0.95f;
+        glm::vec3 animDiffuse = lightDiffuse * 0.95f;
+        glm::vec3 animSpecular = lightSpecular * 0.90f;
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.direction"), lightDir.x, lightDir.y, lightDir.z);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.ambient"), animAmbient.r, animAmbient.g, animAmbient.b);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.diffuse"), animDiffuse.r, animDiffuse.g, animDiffuse.b);
+        glUniform3f(glGetUniformLocation(animShader->Program, "light.specular"), animSpecular.r, animSpecular.g, animSpecular.b);
         glUniform3f(glGetUniformLocation(animShader->Program, "material.specular"), 0.5f, 0.5f, 0.5f);
         glUniform1f(glGetUniformLocation(animShader->Program, "material.shininess"), 32.0f);
-        glUniform3f(glGetUniformLocation(animShader->Program, "viewPos"),
-            camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+        glUniform3f(glGetUniformLocation(animShader->Program, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 
         glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 1);
         glActiveTexture(GL_TEXTURE1);
@@ -1192,6 +1397,42 @@ int main()
         glUniform1i(glGetUniformLocation(animShader->Program, "usarForzada"), 0);
 
         animacionPersona3->DrawTick(*animShader, frameAnimacion);
+
+        // ============================================================
+        // RENDERIZAR SKYBOX
+        // ============================================================
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
+
+        skyboxShader.Use();
+        glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(skyboxShader.Program, "view"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(skyboxView)
+        );
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(skyboxShader.Program, "projection"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(projection)
+        );
+
+        glBindVertexArray(skyboxVAO);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapsSkybox[skyboxActual]);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindVertexArray(0);
+
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+
         glfwSwapBuffers(window);
 
         // Iniciar la musica despues de mostrar el primer frame de la escena
@@ -1215,6 +1456,13 @@ int main()
     delete animacionPersonaje;
     delete animacionPersona3;
     delete animShader;
+
+    // LIBERAR SKYBOX
+    glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteBuffers(1, &skyboxVBO);
+    glDeleteTextures(1, &cubemapDia);
+    glDeleteTextures(1, &cubemapAtardecer);
+    glDeleteTextures(1, &cubemapNoche);
 
     // LIBERAR AUDIO
     if (musicaCargada) {
@@ -1305,6 +1553,24 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         }
         ma_sound_set_volume(&musicaFondo, volumenMusica);
         std::cout << "Volumen musica: " << volumenMusica << std::endl;
+    }
+    // Cambiar skybox con la tecla T
+    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+        skyboxActual++;
+
+        if (skyboxActual > 2) {
+            skyboxActual = 0;
+        }
+
+        if (skyboxActual == 0) {
+            std::cout << "Skybox actual: DIA" << std::endl;
+        }
+        else if (skyboxActual == 1) {
+            std::cout << "Skybox actual: ATARDECER" << std::endl;
+        }
+        else {
+            std::cout << "Skybox actual: NOCHE" << std::endl;
+        }
     }
 }
 

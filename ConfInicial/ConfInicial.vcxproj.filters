@@ -59,6 +59,12 @@
     <None Include="Shader\anim.frag">
       <Filter>Archivos de origen\NewFilter1</Filter>
     </None>
+    <None Include="Shader\SkyBox.frag">
+      <Filter>Archivos de origen\NewFilter1</Filter>
+    </None>
+    <None Include="Shader\SkyBox.vs">
+      <Filter>Archivos de origen\NewFilter1</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
